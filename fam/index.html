@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapTap Score Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
+        /* Bigger, easier-to-tap zoom/pan/reset icons in the ApexCharts toolbar on touch screens. */
+        .apexcharts-toolbar { gap: 4px; }
+        .apexcharts-toolbar svg { width: 20px !important; height: 20px !important; }
+        .apexcharts-menu-icon, .apexcharts-zoom-icon, .apexcharts-zoomin-icon,
+        .apexcharts-zoomout-icon, .apexcharts-reset-icon, .apexcharts-pan-icon,
+        .apexcharts-selection-icon {
+            padding: 6px !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full">
+    <header class="bg-slate-900/80 border-b border-slate-800/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                <i data-lucide="globe" class="w-6 h-6 text-emerald-500"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-100 via-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+                    MapTap Score Tracker
+                </h1>
+                <p class="text-xs text-slate-400">Gold Team Rules &mdash; Daily Geography Game Stats</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 text-xs">
+            
+            <span class="text-slate-400">Generated: <span id="report-generation-time"></span></span>
+        </div>
+    </header>
+
+    <main class="p-6 flex flex-col gap-6 max-w-7xl mx-auto">
+        <!-- Group Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Days Played</p>
+                <h3 id="stat-total-days" class="text-3xl font-extrabold text-white mt-1">--</h3>
+            </div>
+            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Games Logged</p>
+                <h3 id="stat-total-games" class="text-3xl font-extrabold text-white mt-1">--</h3>
+            </div>
+            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Group Average Score</p>
+                <h3 id="stat-group-avg" class="text-3xl font-extrabold text-white mt-1">--</h3>
+            </div>
+            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Date Range</p>
+                <h3 id="stat-date-range" class="text-lg font-bold text-white mt-1">--</h3>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center justify-between border-b border-slate-800/40 pb-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-500"></i>
+                    <h3 class="font-semibold text-white">Score History</h3>
+                </div>
+                <span class="text-xs text-slate-500">Gaps = day not played &middot; pinch or use the toolbar to zoom</span>
+            </div>
+            <div class="relative w-full h-[300px] sm:h-[420px]">
+                <div id="chart-element" class="w-full h-full"></div>
+            </div>
+        </div>
+
+        <!-- Per-person stats table -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
+                <h3 class="font-semibold text-white">Player Stats</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-300">
+                    <thead id="player-stats-thead" class="text-xs text-slate-400 uppercase bg-slate-950/60 border-b border-slate-850">
+                        <tr>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="name" data-sort-type="text">Player <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="games" data-sort-type="num">Games Played <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="avg" data-sort-type="num">Average Score <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="median" data-sort-type="num">Median Score <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="mode1" data-sort-type="num">Mode #1 <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="mode2" data-sort-type="num">Mode #2 <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="mode3" data-sort-type="num">Mode #3 <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="high" data-sort-type="num">High Score <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="low" data-sort-type="num">Low Score <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="hundreds" data-sort-type="num">100s <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="losses" data-sort-type="num">Last Places <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="seconds" data-sort-type="num">2nd Places <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="wins" data-sort-type="num">Wins <span class="sort-arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="player-stats-tbody"></tbody>
+                </table>
+            </div>
+            <p class="text-xs text-slate-500">Wins/2nd/last places only count on days where 2+ people submitted a score - a "win" is the top score that day, a "2nd place" is the second-highest distinct score, a "last place" is the lowest score that day. Ties share a place. 👑 next to a name = most wins in the group. 🚩 = caught fudging a score (see Raw Log). * next to a name/games played/average/median/low score/last places = 1+ confirmed cherry-picker day(s) - reacted to that day's puzzle in chat but held back a bad score. Disappointing. A cherry-picker can't win the crown on those columns (it passes to the next-highest legitimate player), since their numbers there are exactly what selective posting would inflate. Click a column header to sort.</p>
+        </div>
+
+        <!-- Scouting Report -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="clipboard-list" class="w-5 h-5 text-slate-400"></i>
+                <h3 class="font-semibold text-white">Scouting Report</h3>
+            </div>
+            <div id="scouting-report-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Predictions -->
+        <div class="p-6 bg-gradient-to-br from-fuchsia-950/40 to-slate-900/40 border border-fuchsia-800/40 rounded-xl flex flex-col gap-3 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-fuchsia-800/30 pb-4">
+                <i data-lucide="sparkles" class="w-5 h-5 text-fuchsia-400"></i>
+                <h3 class="font-semibold text-white">Next Week's Predictions</h3>
+                <span class="text-xs text-slate-500 ml-auto">100% scientific. 0% accountable.</span>
+            </div>
+            <p id="predictions-text" class="text-sm text-slate-300 leading-relaxed"></p>
+        </div>
+
+        <!-- Score Distribution -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center justify-between border-b border-slate-800/40 pb-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="box-select" class="w-5 h-5 text-emerald-500"></i>
+                    <h3 class="font-semibold text-white">Score Distribution</h3>
+                </div>
+                <span class="text-xs text-slate-500">Box = 25th-75th percentile, line = median, whiskers = min/max</span>
+            </div>
+            <div class="relative w-full h-[400px]">
+                <div id="boxplot-element" class="w-full h-full"></div>
+            </div>
+        </div>
+
+        <!-- Integrity Log - only rendered if there's at least one incident, see script below -->
+        <div id="integrity-log-section" class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md" style="display: none;">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
+                <h3 class="font-semibold text-white">Integrity Log</h3>
+            </div>
+            <div id="integrity-log-list" class="flex flex-col gap-3"></div>
+        </div>
+
+        <!-- Raw log -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="table" class="w-5 h-5 text-slate-400"></i>
+                <h3 class="font-semibold text-white">Raw Log</h3>
+            </div>
+            <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+                <table class="w-full text-sm text-left text-slate-300">
+                    <thead class="text-xs text-slate-400 uppercase bg-slate-950/60 border-b border-slate-850 sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3">Date</th>
+                            <th class="px-6 py-3">Player</th>
+                            <th class="px-6 py-3">Final Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="raw-log-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const reportData = {"categories": ["May 9", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15", "May 16", "May 17", "May 18", "May 19", "May 20", "May 21", "May 22", "May 23", "May 24", "May 25", "May 26", "May 27", "May 28", "May 29", "May 30", "May 31", "Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7", "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14", "Jun 15", "Jun 16", "Jun 17", "Jun 18", "Jun 19", "Jun 20", "Jun 21", "Jun 22", "Jun 23", "Jun 24", "Jun 25", "Jun 26", "Jun 27", "Jun 28", "Jun 29", "Jun 30", "Jul 1", "Jul 2", "Jul 3", "Jul 4", "Jul 5", "Jul 6", "Jul 7", "Jul 8"], "series": [{"name": "Dan", "data": [957, 919, 689, 938, 987, 906, 959, 930, 957, 944, 909, 920, 948, 651, 808, 860, 948, 958, 826, 981, 722, 941, 942, 917, 973, 961, 943, 939, 966, 930, 941, 954, 938, 968, 944, 925, 978, 966, 938, 936, 861, 857, 856, 954, 983, 930, 901, 913, 820, 960, 925, 883, 936, 958, 887, 949, 954, 953, 919, 869, 969], "color": "#f59e0b"}, {"name": "Scott", "data": [920, 845, 808, 944, 968, 928, 953, 840, 961, 955, 913, 927, 903, 747, 949, 843, 948, 913, 707, 979, 852, 934, 963, 957, 974, 956, 962, 930, 973, 892, 959, 924, 965, 974, 901, 963, 971, 979, 917, 972, 926, 954, 823, 948, 953, 959, 912, 951, 648, 810, 862, 954, 911, 940, 930, 838, 940, 961, 855, 845, 975], "color": "#0ea5e9"}, {"name": "Mike", "data": [918, 778, 671, 816, 895, 931, 880, 633, 908, 951, 833, 891, 904, 657, 843, 749, 949, 903, 585, 952, 706, 791, 881, 847, 933, 831, 784, 896, 879, 972, 941, 902, 928, 945, 935, 922, 923, 953, 892, 922, 867, 926, 839, 544, 964, 878, 949, 692, 476, 720, 877, 815, 830, 704, 894, 853, 882, 947, 754, 640, 947], "color": "#10b981"}], "person_stats": [{"name": "Dan", "color": "#f59e0b", "games": 61, "avg": 917.3, "median": 938, "high": 987, "low": 651, "low_date": "May 22", "wins": 29, "seconds": 24, "losses": 10, "flags": 0, "ghost_days": 0, "hundreds": 62, "std": 66.1, "days_since_last_game": 0, "pos_avgs": [97.9, 96.5, 95.5, 90.8, 86.4], "last5_avg": 932.8, "form_delta": 15.5, "mode1": 100, "mode1_count": 62, "mode2": 95, "mode2_count": 38, "mode3": 99, "mode3_count": 34, "nickname": "The Sniper King", "blurb": "Dan is absolutely painting the map with a league-best 917.3 average and a staggering 62 perfect 100s to their name. Even the mighty struggle, though, as evidenced by that soul-crushing 1-point heartbreak loss back on May 25."}, {"name": "Scott", "color": "#0ea5e9", "games": 61, "avg": 914.2, "median": 940, "high": 979, "low": 648, "low_date": "Jun 26", "wins": 28, "seconds": 26, "losses": 8, "flags": 0, "ghost_days": 0, "hundreds": 55, "std": 67.7, "days_since_last_game": 0, "pos_avgs": [98.3, 96.5, 95.6, 91.2, 84.8], "last5_avg": 915.2, "form_delta": 1.0, "mode1": 100, "mode1_count": 55, "mode2": 95, "mode2_count": 39, "mode3": 99, "mode3_count": 38, "nickname": "The Thursday Titan", "blurb": "Scott is a total force of nature on Thursdays, boasting a monstrous 944.1 average that leaves the rest of the field eating digital dust. They are the ultimate escape artist with only 8 last-place finishes, somehow dodging the cellar even when the pressure hits the red line."}, {"name": "Mike", "color": "#10b981", "games": 61, "avg": 843.1, "median": 881, "high": 972, "low": 476, "low_date": "Jun 26", "wins": 4, "seconds": 13, "losses": 45, "flags": 0, "ghost_days": 0, "hundreds": 16, "std": 112.8, "days_since_last_game": 0, "pos_avgs": [94.7, 94.5, 89.5, 85.6, 72.8], "last5_avg": 834.0, "form_delta": -9.1, "mode1": 95, "mode1_count": 52, "mode2": 97, "mode2_count": 26, "mode3": 99, "mode3_count": 21, "nickname": "The Basement Dweller", "blurb": "Mike is currently anchored to the bottom of the rankings, lugging around a league-worst 45 last-place finishes like a heavy lead weight. With a wild 112.8-point standard deviation, you never know if you're getting a MapTap masterpiece or an absolute disaster of a round."}], "group_stats": {"total_days": 61, "total_games": 183, "group_avg": 891.5, "date_range": "May 9 - Jul 8"}, "raw_log": [{"date": "Jul 8", "person": "Scott", "score": 975, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Dan", "score": 969, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Mike", "score": 640, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Dan", "score": 869, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Scott", "score": 855, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Mike", "score": 754, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Dan", "score": 953, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Mike", "score": 882, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Scott", "score": 838, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Mike", "score": 853, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Dan", "score": 949, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Mike", "score": 894, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Dan", "score": 887, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Mike", "score": 704, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Scott", "score": 911, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Mike", "score": 830, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Mike", "score": 815, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Dan", "score": 883, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Scott", "score": 862, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Mike", "score": 877, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Scott", "score": 810, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Mike", "score": 720, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Dan", "score": 960, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Scott", "score": 648, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Mike", "score": 476, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Dan", "score": 820, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Scott", "score": 951, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Mike", "score": 692, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Dan", "score": 913, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Scott", "score": 912, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Mike", "score": 949, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Dan", "score": 901, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Mike", "score": 878, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Mike", "score": 964, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Dan", "score": 983, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Mike", "score": 544, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Scott", "score": 823, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Mike", "score": 839, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Dan", "score": 856, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Mike", "score": 926, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Dan", "score": 857, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Scott", "score": 926, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Mike", "score": 867, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Dan", "score": 861, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Scott", "score": 972, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Mike", "score": 892, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Mike", "score": 953, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Scott", "score": 971, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Mike", "score": 923, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Dan", "score": 978, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Scott", "score": 901, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Mike", "score": 935, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Mike", "score": 945, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Dan", "score": 968, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Scott", "score": 965, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Mike", "score": 928, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Scott", "score": 924, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Mike", "score": 902, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Mike", "score": 941, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Scott", "score": 892, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Mike", "score": 972, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Scott", "score": 973, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Mike", "score": 879, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Mike", "score": 896, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Dan", "score": 939, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Scott", "score": 962, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Mike", "score": 784, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Dan", "score": 943, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Scott", "score": 956, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Mike", "score": 831, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Dan", "score": 961, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Mike", "score": 933, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Scott", "score": 957, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Mike", "score": 847, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Dan", "score": 917, "flagged": false, "note": null}, {"date": "May 31", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "May 31", "person": "Mike", "score": 881, "flagged": false, "note": null}, {"date": "May 31", "person": "Dan", "score": 942, "flagged": false, "note": null}, {"date": "May 30", "person": "Scott", "score": 934, "flagged": false, "note": null}, {"date": "May 30", "person": "Mike", "score": 791, "flagged": false, "note": null}, {"date": "May 30", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "May 29", "person": "Scott", "score": 852, "flagged": false, "note": null}, {"date": "May 29", "person": "Mike", "score": 706, "flagged": false, "note": null}, {"date": "May 29", "person": "Dan", "score": 722, "flagged": false, "note": null}, {"date": "May 28", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "May 28", "person": "Mike", "score": 952, "flagged": false, "note": null}, {"date": "May 28", "person": "Dan", "score": 981, "flagged": false, "note": null}, {"date": "May 27", "person": "Scott", "score": 707, "flagged": false, "note": null}, {"date": "May 27", "person": "Mike", "score": 585, "flagged": false, "note": null}, {"date": "May 27", "person": "Dan", "score": 826, "flagged": false, "note": null}, {"date": "May 26", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 26", "person": "Mike", "score": 903, "flagged": false, "note": null}, {"date": "May 26", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "May 25", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "May 25", "person": "Mike", "score": 949, "flagged": false, "note": null}, {"date": "May 25", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 24", "person": "Scott", "score": 843, "flagged": false, "note": null}, {"date": "May 24", "person": "Mike", "score": 749, "flagged": false, "note": null}, {"date": "May 24", "person": "Dan", "score": 860, "flagged": false, "note": null}, {"date": "May 23", "person": "Scott", "score": 949, "flagged": false, "note": null}, {"date": "May 23", "person": "Mike", "score": 843, "flagged": false, "note": null}, {"date": "May 23", "person": "Dan", "score": 808, "flagged": false, "note": null}, {"date": "May 22", "person": "Scott", "score": 747, "flagged": false, "note": null}, {"date": "May 22", "person": "Mike", "score": 657, "flagged": false, "note": null}, {"date": "May 22", "person": "Dan", "score": 651, "flagged": false, "note": null}, {"date": "May 21", "person": "Scott", "score": 903, "flagged": false, "note": null}, {"date": "May 21", "person": "Mike", "score": 904, "flagged": false, "note": null}, {"date": "May 21", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 20", "person": "Scott", "score": 927, "flagged": false, "note": null}, {"date": "May 20", "person": "Mike", "score": 891, "flagged": false, "note": null}, {"date": "May 20", "person": "Dan", "score": 920, "flagged": false, "note": null}, {"date": "May 19", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 19", "person": "Mike", "score": 833, "flagged": false, "note": null}, {"date": "May 19", "person": "Dan", "score": 909, "flagged": false, "note": null}, {"date": "May 18", "person": "Scott", "score": 955, "flagged": false, "note": null}, {"date": "May 18", "person": "Mike", "score": 951, "flagged": false, "note": null}, {"date": "May 18", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "May 17", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "May 17", "person": "Mike", "score": 908, "flagged": false, "note": null}, {"date": "May 17", "person": "Dan", "score": 957, "flagged": false, "note": null}, {"date": "May 16", "person": "Scott", "score": 840, "flagged": false, "note": null}, {"date": "May 16", "person": "Mike", "score": 633, "flagged": false, "note": null}, {"date": "May 16", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "May 15", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "May 15", "person": "Mike", "score": 880, "flagged": false, "note": null}, {"date": "May 15", "person": "Dan", "score": 959, "flagged": false, "note": null}, {"date": "May 14", "person": "Scott", "score": 928, "flagged": false, "note": null}, {"date": "May 14", "person": "Mike", "score": 931, "flagged": false, "note": null}, {"date": "May 14", "person": "Dan", "score": 906, "flagged": false, "note": null}, {"date": "May 13", "person": "Scott", "score": 968, "flagged": false, "note": null}, {"date": "May 13", "person": "Mike", "score": 895, "flagged": false, "note": null}, {"date": "May 13", "person": "Dan", "score": 987, "flagged": false, "note": null}, {"date": "May 12", "person": "Scott", "score": 944, "flagged": false, "note": null}, {"date": "May 12", "person": "Mike", "score": 816, "flagged": false, "note": null}, {"date": "May 12", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "May 11", "person": "Scott", "score": 808, "flagged": false, "note": null}, {"date": "May 11", "person": "Mike", "score": 671, "flagged": false, "note": null}, {"date": "May 11", "person": "Dan", "score": 689, "flagged": false, "note": null}, {"date": "May 10", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "May 10", "person": "Mike", "score": 778, "flagged": false, "note": null}, {"date": "May 10", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "May 9", "person": "Scott", "score": 920, "flagged": false, "note": null}, {"date": "May 9", "person": "Mike", "score": 918, "flagged": false, "note": null}, {"date": "May 9", "person": "Dan", "score": 957, "flagged": false, "note": null}], "boxplot": [{"x": "Dan", "y": [651, 907.5, 938, 957.0, 987]}, {"x": "Scott", "y": [648, 896.5, 940, 960.0, 979]}, {"x": "Mike", "y": [476, 787.5, 881, 927.0, 972]}], "predictions": "The throne is officially shaking as Scott looks to eclipse Dan\u2019s all-time 987 record, having already teased the top of the board with a 979. Meanwhile, Dan enters the fray riding an incredible 16-game heater, looking to further extend their lopsided 50-10 dominance over a reeling Mike. Watch for Mike to potentially go nuclear with another +420 point overnight jump, though their current -9.1 form slump suggests we might be in for more turbulence than triumph.", "predictions_pack": {"as_of_latest_game": "Jul 8", "active_window_days": 5, "active_players": [{"name": "Dan", "days_since_last_game": 0, "last5_scores": [954, 953, 919, 869, 969], "recent_form_last5_vs_season": 15.5, "season_average": 917.3, "season_high": 987, "season_low": 651, "season_trend_points_per_game": 0.52, "longest_hot_streak": 16, "consistency_std_dev": 66.1, "best_weekday": {"day": "Sunday", "avg": 935.3}, "dominates_head_to_head": {"opponent": "Mike", "record": "50-10"}}, {"name": "Scott", "days_since_last_game": 0, "last5_scores": [940, 961, 855, 845, 975], "recent_form_last5_vs_season": 1.0, "season_average": 914.2, "season_high": 979, "season_low": 648, "season_trend_points_per_game": 0.02, "longest_hot_streak": 8, "consistency_std_dev": 67.7, "best_weekday": {"day": "Thursday", "avg": 944.1}, "dominates_head_to_head": {"opponent": "Mike", "record": "51-10"}}, {"name": "Mike", "days_since_last_game": 0, "last5_scores": [882, 947, 754, 640, 947], "recent_form_last5_vs_season": -9.1, "season_average": 843.1, "season_high": 972, "season_low": 476, "season_trend_points_per_game": -0.26, "longest_hot_streak": 15, "consistency_std_dev": 112.8, "best_weekday": {"day": "Monday", "avg": 871.7}}], "inactive_players": [], "inactive_players_rule": "Players in inactive_players have NOT played recently. You may mention at most ONE of them, and ONLY to note how long they've been gone and build anticipation for their return - never claim recent form, a hot streak, momentum, or any current-performance angle for them.", "all_time_record": {"score": 987, "holder": "Dan", "date": "May 13"}, "suggested_storylines": ["the all-time 987 (set by Dan on May 13) is On Notice - Scott has already touched 979 and is, frankly, due.", "Mike is the resident wild card - 112.8-point swings make it a coin flip between a masterpiece and a meltdown.", "it's panic stations for Mike, 9.1 below their own average lately - don't be shocked by a sub-480 faceplant before they climb out.", "Dan is riding a 16-game heater at or above their own average, with no sign of letting up.", "Dan owns Mike head-to-head (50-10) and that beatdown shows no sign of flipping.", "Dan's season arrow points up (+0.52 points a game) and the climb isn't done.", "Dan is surging into the week white-hot, up +15.5 on their season average across the last 5 - a new personal best feels inevitable.", "circle Thursday: Scott averages 944.1 on it, comfortably their strongest day of the week.", "Dan is a metronome (66.1-point spread); bank on another showing right around 920."]}, "cheating_incidents": [], "cherry_pick_incidents": [], "generated_at": "July 09, 2026 at 01:49 PM"};
+
+        document.getElementById('report-generation-time').textContent = reportData.generated_at;
+
+        document.getElementById('stat-total-days').textContent = reportData.group_stats.total_days;
+        document.getElementById('stat-total-games').textContent = reportData.group_stats.total_games;
+        document.getElementById('stat-group-avg').textContent = reportData.group_stats.group_avg;
+        document.getElementById('stat-date-range').textContent = reportData.group_stats.date_range;
+
+        // Crown the best and sad-face the worst in each Player Stats column.
+        // Mode columns are scored by the mode VALUE (the score itself), not how
+        // many times that score was hit.
+        const statColumns = ['games', 'avg', 'median', 'mode1', 'mode2', 'mode3', 'high', 'low', 'hundreds', 'losses', 'seconds', 'wins'];
+        // Lower is better for these columns, so the crown/sad-face (and default
+        // sort direction) flip relative to every other column here.
+        const invertedColumns = new Set(['losses']);
+        // A confirmed cherry-picker's games/avg/median/low/losses numbers are
+        // exactly the stats their selective posting would inflate, so they're
+        // excluded from winning a crown (best-in-group) on these columns - it
+        // just passes to the next-highest legitimate player instead. They can
+        // still show a sad-face (worst) on them, and every other column's
+        // crown/sad-face is unaffected.
+        const ghostExcludedColumns = new Set(['games', 'avg', 'median', 'low', 'losses']);
+        const activePlayers = reportData.person_stats.filter(p => p.games > 0);
+        const nonCherryPickers = activePlayers.filter(p => !(p.ghost_days > 0));
+        const extremes = {};
+        const crownEligibleExtremes = {};
+        statColumns.forEach(key => {
+            const vals = activePlayers.map(p => p[key]).filter(v => v !== null && v !== undefined);
+            if (vals.length) extremes[key] = { max: Math.max(...vals), min: Math.min(...vals) };
+
+            const eligiblePool = ghostExcludedColumns.has(key) ? nonCherryPickers : activePlayers;
+            const eligibleVals = eligiblePool.map(p => p[key]).filter(v => v !== null && v !== undefined);
+            if (eligibleVals.length) crownEligibleExtremes[key] = { max: Math.max(...eligibleVals), min: Math.min(...eligibleVals) };
+        });
+
+        function extremeSuffix(value, key, p) {
+            const crownPool = ghostExcludedColumns.has(key) ? crownEligibleExtremes : extremes;
+            const hasCrownPool = crownPool[key] && crownPool[key].max !== crownPool[key].min;
+            const hasWorstPool = extremes[key] && extremes[key].max !== extremes[key].min;
+            if (!hasCrownPool && !hasWorstPool) return '';
+            const big = key === 'wins';
+            const size = big ? 'text-2xl align-middle' : 'text-sm align-middle';
+            let suffix = '';
+            if (hasCrownPool) {
+                const bestValue = invertedColumns.has(key) ? crownPool[key].min : crownPool[key].max;
+                const crownBlocked = ghostExcludedColumns.has(key) && p && p.ghost_days > 0;
+                if (!crownBlocked && value === bestValue) suffix += ` <span class="${size}" title="Best in the group">👑</span>`;
+            }
+            if (hasWorstPool) {
+                const worstValue = invertedColumns.has(key) ? extremes[key].max : extremes[key].min;
+                if (value === worstValue) suffix += ` <span class="${size}" title="Worst in the group">😢</span>`;
+            }
+            return suffix;
+        }
+
+        function decorate(value, key, p) {
+            return `${value}${extremeSuffix(value, key, p)}`;
+        }
+
+        function ghostMarker(p) {
+            return p.ghost_days > 0
+                ? ` <span class="text-amber-400 font-bold" title="${p.ghost_days} confirmed cherry-picker day(s) - reacted to that day's puzzle in chat but held back a bad score. Disappointing.">*</span>`
+                : '';
+        }
+
+        let playerSort = { key: null, dir: 1 };
+
+        function renderPlayerStatsTable() {
+            const playerBody = document.getElementById('player-stats-tbody');
+            playerBody.innerHTML = '';
+
+            let rows = reportData.person_stats.slice();
+            if (playerSort.key) {
+                const { key, dir } = playerSort;
+                const active = rows.filter(p => p.games > 0);
+                const inactive = rows.filter(p => p.games === 0);
+                active.sort((a, b) => {
+                    const av = a[key], bv = b[key];
+                    if (av === null || bv === null) return (av === null ? 1 : 0) - (bv === null ? 1 : 0);
+                    return typeof av === 'string' ? dir * av.localeCompare(bv) : dir * (av - bv);
+                });
+                rows = active.concat(inactive);
+            }
+
+            rows.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-slate-800/40 hover:bg-slate-900/20 transition-colors';
+                const cell = (key, val) => (p.games > 0 && val !== null) ? decorate(val, key, p) : '--';
+                const modeCell = (val, count, key) =>
+                    (val !== null && val !== undefined) ? `${val} ×${count}${extremeSuffix(val, key)}` : '--';
+                const isTopWinner = p.games > 0 && extremes.wins && extremes.wins.max !== extremes.wins.min && p.wins === extremes.wins.max;
+                row.innerHTML = `
+                    <td class="px-4 py-4 font-semibold" style="color: ${p.color}">${p.name}${isTopWinner ? ` <span class="text-2xl align-middle" title="Most wins in the group">👑</span>` : ''}${p.flags > 0 ? ` <span title="Caught fudging ${p.flags} score(s)">🚩</span>` : ''}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('games', p.games)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('avg', p.avg)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('median', p.median)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${modeCell(p.mode1, p.mode1_count, 'mode1')}</td>
+                    <td class="px-4 py-4">${modeCell(p.mode2, p.mode2_count, 'mode2')}</td>
+                    <td class="px-4 py-4">${modeCell(p.mode3, p.mode3_count, 'mode3')}</td>
+                    <td class="px-4 py-4">${cell('high', p.high)}</td>
+                    <td class="px-4 py-4">${cell('low', p.low)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('hundreds', p.hundreds)}</td>
+                    <td class="px-4 py-4">${cell('losses', p.losses)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('seconds', p.seconds)}</td>
+                    <td class="px-4 py-4">${cell('wins', p.wins)}</td>
+                `;
+                playerBody.appendChild(row);
+            });
+        }
+
+        document.querySelectorAll('#player-stats-thead th[data-sort-key]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sortKey;
+                if (playerSort.key === key) {
+                    playerSort.dir *= -1;
+                } else {
+                    playerSort.key = key;
+                    if (th.dataset.sortType === 'text') {
+                        playerSort.dir = 1;
+                    } else {
+                        playerSort.dir = invertedColumns.has(key) ? 1 : -1;
+                    }
+                }
+                document.querySelectorAll('#player-stats-thead .sort-arrow').forEach(s => s.textContent = '');
+                th.querySelector('.sort-arrow').textContent = playerSort.dir === 1 ? '▲' : '▼';
+                renderPlayerStatsTable();
+            });
+        });
+
+        renderPlayerStatsTable();
+
+        const scoutingGrid = document.getElementById('scouting-report-grid');
+        reportData.person_stats.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'p-4 bg-slate-950/40 border border-slate-800/60 rounded-lg';
+            card.innerHTML = `
+                <p class="font-semibold mb-1" style="color: ${p.color}">${p.name} <span class="text-xs font-normal text-slate-500">"${p.nickname || ''}"</span></p>
+                <p class="text-sm text-slate-400 leading-relaxed">${p.blurb || ''}</p>
+            `;
+            scoutingGrid.appendChild(card);
+        });
+
+        document.getElementById('predictions-text').textContent =
+            reportData.predictions || "Not enough games on the board yet to make a prediction.";
+
+        // Integrity Log: exact date + verbatim chat line for every score-fudge
+        // catch, and exact date/time + quoted banter for every confirmed
+        // cherry-picking incident. Whole section stays hidden if nobody's
+        // been caught doing either.
+        const esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const cheatingIncidents = reportData.cheating_incidents || [];
+        const cherryPickIncidents = reportData.cherry_pick_incidents || [];
+        if (cheatingIncidents.length || cherryPickIncidents.length) {
+            const integrityList = document.getElementById('integrity-log-list');
+            document.getElementById('integrity-log-section').style.display = '';
+
+            cheatingIncidents.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-sm text-slate-300';
+                item.innerHTML = `
+                    <p class="font-semibold text-rose-300">🚩 Score fudging - ${esc(c.person)} on ${esc(c.date)}</p>
+                    ${c.raw_text ? `<p class="mt-1 italic text-slate-400">"${esc(c.raw_text)}"</p>` : ''}
+                    <p class="mt-1 text-xs text-slate-500">${esc(c.note)}</p>
+                `;
+                integrityList.appendChild(item);
+            });
+
+            cherryPickIncidents.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-sm text-slate-300';
+                item.innerHTML = `
+                    <p class="font-semibold text-amber-300">* Cherry-picking - ${esc(c.person)} on ${esc(c.date)}${c.time ? ` at ${esc(c.time)}` : ''}</p>
+                    <p class="mt-1 italic text-slate-400">"${esc(c.evidence)}"</p>
+                    <p class="mt-1 text-xs text-slate-500">${esc(c.note)}</p>
+                `;
+                integrityList.appendChild(item);
+            });
+        }
+
+        const rawBody = document.getElementById('raw-log-tbody');
+        reportData.raw_log.forEach(r => {
+            const row = document.createElement('tr');
+            row.className = r.flagged
+                ? 'border-b border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 transition-colors'
+                : 'border-b border-slate-800/40 hover:bg-slate-900/20 transition-colors';
+            row.innerHTML = `
+                <td class="px-6 py-4">${r.date}</td>
+                <td class="px-6 py-4 font-semibold">${r.person}</td>
+                <td class="px-6 py-4">${r.score}${r.flagged ? ` <span class="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40" title="${r.note}">🚩 CHEATER</span>` : ''}</td>
+            `;
+            rawBody.appendChild(row);
+        });
+
+        const options = {
+            series: reportData.series.map(s => ({ name: s.name, data: s.data })),
+            chart: {
+                height: 420,
+                type: 'line',
+                background: 'transparent',
+                zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
+                toolbar: {
+                    show: true,
+                    tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
+                    autoSelected: 'zoom'
+                }
+            },
+            theme: { mode: 'dark' },
+            colors: reportData.series.map(s => s.color),
+            stroke: { width: 3, curve: 'smooth' },
+            markers: { size: 4, strokeColors: '#0f172a', strokeWidth: 2 },
+            xaxis: {
+                categories: reportData.categories,
+                labels: { style: { colors: '#94a3b8', fontSize: '11px' }, rotate: -45, hideOverlappingLabels: true },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                title: { text: 'Final Score', style: { color: '#94a3b8', fontWeight: 600 } },
+                labels: { style: { colors: '#94a3b8' } }
+            },
+            tooltip: { shared: true, intersect: false, theme: 'dark' },
+            grid: { borderColor: 'rgba(51, 65, 85, 0.3)', strokeDashArray: 4 },
+            legend: { position: 'top', labels: { colors: '#f1f5f9' } },
+            connectNulls: false,
+            responsive: [{
+                breakpoint: 640,
+                options: {
+                    chart: { height: 300 },
+                    legend: { fontSize: '10px', itemMargin: { horizontal: 6, vertical: 2 } },
+                    xaxis: { labels: { style: { fontSize: '9px' } } }
+                }
+            }]
+        };
+
+        const chart = new ApexCharts(document.querySelector("#chart-element"), options);
+        chart.render();
+
+        const boxplotOptions = {
+            series: [{ type: 'boxPlot', data: reportData.boxplot }],
+            chart: {
+                height: 400,
+                type: 'boxPlot',
+                toolbar: { show: false },
+                background: 'transparent'
+            },
+            theme: { mode: 'dark' },
+            plotOptions: {
+                boxPlot: {
+                    colors: { upper: '#6366f1', lower: '#6366f1' }
+                }
+            },
+            xaxis: {
+                labels: { style: { colors: '#94a3b8', fontSize: '11px' } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                title: { text: 'Final Score', style: { color: '#94a3b8', fontWeight: 600 } },
+                labels: { style: { colors: '#94a3b8' } }
+            },
+            tooltip: { theme: 'dark' },
+            grid: { borderColor: 'rgba(51, 65, 85, 0.3)', strokeDashArray: 4 }
+        };
+
+        const boxplotChart = new ApexCharts(document.querySelector("#boxplot-element"), boxplotOptions);
+        boxplotChart.render();
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Deny-all safety net: this repo should only ever contain the 5 published
+# report pages. Anything else that ends up in this folder (a stray private
+# source file, temp output, OS junk, etc.) is ignored by default instead of
+# accidentally getting committed and pushed publicly.
+*
+
+!/.gitignore
+!/index.html
+!/work/
+!/work/index.html
+!/fam/
+!/fam/index.html
+!/golf/
+!/golf/index.html
+!/friends/
+!/friends/index.html
