@@ -1,4 +1,4 @@
-# Deny-all safety net: this repo should only ever contain the 6 published
+# Deny-all safety net: this repo should only ever contain the 7 published
 # report pages. Anything else that ends up in this folder (a stray private
 # source file, temp output, OS junk, etc.) is ignored by default instead of
 # accidentally getting committed and pushed publicly.
@@ -6,6 +6,8 @@
 
 !/.gitignore
 !/index.html
+!/everyone/
+!/everyone/index.html
 !/work/
 !/work/index.html
 !/fam/
