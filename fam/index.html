@@ -58,9 +58,12 @@
                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Group Average Score</p>
                 <h3 id="stat-group-avg" class="text-3xl font-extrabold text-white mt-1">--</h3>
             </div>
-            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md">
-                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Date Range</p>
-                <h3 id="stat-date-range" class="text-lg font-bold text-white mt-1">--</h3>
+            <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-xl backdrop-blur-md flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Date Range</p>
+                    <h3 id="stat-date-range" class="text-lg font-bold text-white mt-1">--</h3>
+                </div>
+                <button id="old-players-toggle" class="shrink-0 text-xs px-2 py-1 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:text-violet-200 hover:border-violet-400 transition-colors whitespace-nowrap">Show old players</button>
             </div>
         </div>
 
@@ -184,6 +187,56 @@
             <div id="h2h-result"></div>
         </div>
 
+        <!-- Average by Day of Week -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="calendar-clock" class="w-5 h-5 text-slate-400"></i>
+                <h3 class="font-semibold text-white">Average Score by Day of Week</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-300">
+                    <thead id="dow-stats-thead" class="text-xs text-slate-400 uppercase bg-slate-950/60 border-b border-slate-850">
+                        <tr>
+                            <th class="sticky left-0 z-10 bg-slate-950 px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="name" data-sort-type="text">Player <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_sun" data-sort-type="num">Sun <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_mon" data-sort-type="num">Mon <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_tue" data-sort-type="num">Tue <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_wed" data-sort-type="num">Wed <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_thu" data-sort-type="num">Thu <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_fri" data-sort-type="num">Fri <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="dow_sat" data-sort-type="num">Sat <span class="sort-arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="dow-stats-tbody"></tbody>
+                </table>
+            </div>
+            <p class="text-xs text-slate-500">Needs 2+ games logged on that weekday to show a number, otherwise --. 👑 = best in the group, 😢 = worst. Click a header to sort.</p>
+        </div>
+
+        <!-- Score Breakdown by Guess -->
+        <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
+                <i data-lucide="list-ordered" class="w-5 h-5 text-slate-400"></i>
+                <h3 class="font-semibold text-white">Score Breakdown by Guess</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-300">
+                    <thead id="position-stats-thead" class="text-xs text-slate-400 uppercase bg-slate-950/60 border-b border-slate-850">
+                        <tr>
+                            <th class="sticky left-0 z-10 bg-slate-950 px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="name" data-sort-type="text">Player <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="pos1_avg" data-sort-type="num">1st Guess <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="pos2_avg" data-sort-type="num">2nd Guess <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="pos3_avg" data-sort-type="num">3rd Guess (&times;2) <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="pos4_avg" data-sort-type="num">4th Guess (&times;3) <span class="sort-arrow"></span></th>
+                            <th class="px-4 py-3 cursor-pointer select-none hover:text-white transition-colors" data-sort-key="pos5_avg" data-sort-type="num">5th Guess (&times;3) <span class="sort-arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="position-stats-tbody"></tbody>
+                </table>
+            </div>
+            <p class="text-xs text-slate-500">Average value of each guess, weighted the same way the Final Score is (1st+2nd+3rd&times;2+4th&times;3+5th&times;3). 👑 = best in the group, 😢 = worst. Click a header to sort.</p>
+        </div>
+
         <!-- Scouting Report -->
         <div class="p-6 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-col gap-4 backdrop-blur-md">
             <div class="flex items-center gap-2 border-b border-slate-800/40 pb-4">
@@ -248,7 +301,19 @@
     </main>
 
     <script>
-        const reportData = {"categories": ["Apr 28", "Apr 29", "Apr 30", "May 1", "May 2", "May 3", "May 4", "May 5", "May 6", "May 7", "May 8", "May 9", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15", "May 16", "May 17", "May 18", "May 19", "May 20", "May 21", "May 22", "May 23", "May 24", "May 25", "May 26", "May 27", "May 28", "May 29", "May 30", "May 31", "Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7", "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14", "Jun 15", "Jun 16", "Jun 17", "Jun 18", "Jun 19", "Jun 20", "Jun 21", "Jun 22", "Jun 23", "Jun 24", "Jun 25", "Jun 26", "Jun 27", "Jun 28", "Jun 29", "Jun 30", "Jul 1", "Jul 2", "Jul 3", "Jul 4", "Jul 5", "Jul 6", "Jul 7", "Jul 8", "Jul 9", "Jul 10", "Jul 11", "Jul 12", "Jul 13", "Jul 14", "Jul 15", "Jul 16", "Jul 17", "Jul 18", "Jul 19", "Jul 20", "Jul 21", "Jul 22", "Jul 23", "Jul 24", "Jul 25", "Jul 26", "Jul 27", "Jul 28", "Jul 29", "Jul 30", "Jul 31", "Aug 1", "Aug 2", "Aug 3", "Aug 4", "Aug 5", "Aug 6", "Aug 7", "Aug 8"], "series": [{"name": "Dan", "data": [null, null, null, null, null, null, null, null, null, null, null, 957, 919, 689, 938, 987, 906, 959, 930, 957, 944, 909, 920, 948, 651, 808, 860, 948, 958, 826, 981, 722, 941, 942, 917, 973, 961, 943, 939, 966, 930, 941, 954, 938, 968, 944, 925, 978, 966, 938, 936, 861, 857, 856, 954, 983, 930, 901, 913, 820, 960, 925, 883, 936, 958, 887, 949, 954, 953, 919, 869, 969, 855, 963, 855, 928, 833, 931, 973, 952, 927, 894, 943, 879, 955, 973, 929, 961, 930, 936, 981, 864, 955, 984, 909, 905, 915, 888, 972, 869, 973, 953, 956], "color": "#f59e0b"}, {"name": "Scott", "data": [null, null, null, null, null, null, null, null, null, null, null, 920, 845, 808, 944, 968, 928, 953, 840, 961, 955, 913, 927, 903, 747, 949, 843, 948, 913, 707, 979, 852, 934, 963, 957, 974, 956, 962, 930, 973, 892, 959, 924, 965, 974, 901, 963, 971, 979, 917, 972, 926, 954, 823, 948, 953, 959, 912, 951, 648, 810, 862, 954, 911, 940, 930, 838, 940, 961, 855, 845, 975, 917, 928, 918, 776, 813, 916, 988, 946, 915, 919, 959, 730, 974, 976, 923, 964, 917, 931, 957, 933, 918, 977, 878, 932, 921, 896, 985, 767, 960, 951, 939], "color": "#0ea5e9"}, {"name": "Big Mike", "data": [552, 851, 912, 748, 723, 651, 709, 841, 766, 550, 803, 918, 778, 671, 816, 895, 931, 880, 633, 908, 951, 833, 891, 904, 657, 843, 749, 949, 903, 585, 952, 706, 791, 881, 847, 933, 831, 784, 896, 879, 972, 941, 902, 928, 945, 935, 922, 923, 953, 892, 922, 867, 926, 839, 544, 964, 878, 949, 692, 476, 720, 877, 815, 830, 704, 894, 853, 882, 947, 754, 640, 947, 693, 903, 881, 899, 748, 888, 919, 786, 915, 786, 938, 604, 822, 936, 844, 956, 844, 522, 921, 881, 927, 957, 824, 909, 865, 932, 971, 793, 887, 642, null], "color": "#10b981"}], "person_stats": [{"name": "Dan", "color": "#f59e0b", "verified": true, "games": 92, "avg": 920.6, "median": 938.0, "high": 987, "low": 651, "low_date": "May 22", "wins": 47, "seconds": 33, "losses": 14, "weekly_wins": 8, "monthly_wins": 2, "flags": 0, "ghost_days": 0, "hundreds": 105, "std": 59.2, "days_since_last_game": 0, "days_since_last_win": 1, "recent_game_count": 6, "pos_avgs": [98.2, 96.8, 94.5, 91.3, 87.5], "last5_avg": 944.6, "form_delta": 24.0, "mode1": 100, "mode1_count": 105, "nickname": "The Metronomic Maverick", "blurb": "Dan is absolute lethal efficiency, banking 105 perfect scores while keeping a razor-sharp 59.2 consistency spread. The only thing standing between them and total dominance is that devastating 1-point heartbreaker from May 25."}, {"name": "Scott", "color": "#0ea5e9", "verified": true, "games": 92, "avg": 915.1, "median": 931.5, "high": 988, "low": 648, "low_date": "Jun 26", "wins": 40, "seconds": 42, "losses": 13, "weekly_wins": 4, "monthly_wins": 0, "flags": 0, "ghost_days": 0, "hundreds": 87, "std": 66.0, "days_since_last_game": 0, "days_since_last_win": 4, "recent_game_count": 6, "pos_avgs": [98.4, 97.0, 94.9, 91.5, 85.1], "last5_avg": 920.4, "form_delta": 5.3, "mode1": 100, "mode1_count": 87, "nickname": "The High-Altitude Hurdle-Jumper", "blurb": "Boasting the undisputed season-high 988, Scott proves that they own the penthouse suite of the leaderboard. Just don't ask them to show up on a Friday, where they crater to an ugly 881.5 average."}, {"name": "Big Mike", "color": "#10b981", "verified": true, "games": 102, "avg": 832.6, "median": 878.5, "high": 972, "low": 476, "low_date": "Jun 26", "wins": 5, "seconds": 20, "losses": 68, "weekly_wins": 1, "monthly_wins": 1, "flags": 0, "ghost_days": 0, "hundreds": 37, "std": 116.2, "days_since_last_game": 1, "days_since_last_win": 5, "recent_game_count": 5, "pos_avgs": [94.5, 94.6, 87.7, 83.8, 72.2], "last5_avg": 845.0, "form_delta": 12.4, "mode1": 95, "mode1_count": 62, "nickname": "The Basement-Dwelling Daredevil", "blurb": "Big Mike continues to embrace the chaos with a brutal 68 last-place finishes, yet they somehow managed to rocket a massive 420 points overnight back on June 22. They are the ultimate wildcard, alternating between pure brilliance and the dreaded 19,019km miss in Tahiti."}], "group_stats": {"total_days": 103, "total_games": 286, "group_avg": 887.4, "date_range": "Apr 28 - Aug 8"}, "head_to_head": {"Dan": {"Big Mike": [76, 14, 1], "Scott": [48, 43, 1]}, "Scott": {"Dan": [43, 48, 1], "Big Mike": [76, 14, 1]}, "Big Mike": {"Dan": [14, 76, 1], "Scott": [14, 76, 1]}}, "raw_log": [{"date": "Aug 8", "person": "Scott", "score": 939, "flagged": false, "note": null}, {"date": "Aug 8", "person": "Dan", "score": 956, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Scott", "score": 951, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Dan", "score": 953, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Big Mike", "score": 642, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Scott", "score": 960, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Big Mike", "score": 887, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Scott", "score": 767, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Dan", "score": 869, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Big Mike", "score": 793, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Scott", "score": 985, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Dan", "score": 972, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Big Mike", "score": 971, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Scott", "score": 896, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Dan", "score": 888, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Big Mike", "score": 932, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Scott", "score": 921, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Dan", "score": 915, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Big Mike", "score": 865, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Scott", "score": 932, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Dan", "score": 905, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Big Mike", "score": 909, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Scott", "score": 878, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Dan", "score": 909, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Big Mike", "score": 824, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Scott", "score": 977, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Dan", "score": 984, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Big Mike", "score": 957, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Scott", "score": 918, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Dan", "score": 955, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Big Mike", "score": 927, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Scott", "score": 933, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Dan", "score": 864, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Scott", "score": 957, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Dan", "score": 981, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Big Mike", "score": 921, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Scott", "score": 931, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Big Mike", "score": 522, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Big Mike", "score": 844, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Scott", "score": 964, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Dan", "score": 961, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Big Mike", "score": 956, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Scott", "score": 923, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Dan", "score": 929, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Big Mike", "score": 844, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Scott", "score": 976, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Big Mike", "score": 936, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Dan", "score": 955, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Big Mike", "score": 822, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Scott", "score": 730, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Dan", "score": 879, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Big Mike", "score": 604, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Dan", "score": 943, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Big Mike", "score": 938, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Scott", "score": 919, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Dan", "score": 894, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Big Mike", "score": 786, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Scott", "score": 915, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Dan", "score": 927, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Big Mike", "score": 915, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Scott", "score": 946, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Dan", "score": 952, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Big Mike", "score": 786, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Scott", "score": 988, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Big Mike", "score": 919, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Scott", "score": 916, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Dan", "score": 931, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Big Mike", "score": 888, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Scott", "score": 813, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Dan", "score": 833, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Big Mike", "score": 748, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Scott", "score": 776, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Dan", "score": 928, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Big Mike", "score": 899, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Scott", "score": 918, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Dan", "score": 855, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Scott", "score": 928, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Dan", "score": 963, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Big Mike", "score": 903, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Dan", "score": 855, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Big Mike", "score": 693, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Scott", "score": 975, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Dan", "score": 969, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Big Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Dan", "score": 869, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Big Mike", "score": 640, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Scott", "score": 855, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Big Mike", "score": 754, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Dan", "score": 953, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Big Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Big Mike", "score": 882, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Scott", "score": 838, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Dan", "score": 949, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Big Mike", "score": 853, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Dan", "score": 887, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Big Mike", "score": 894, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Big Mike", "score": 704, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Scott", "score": 911, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Big Mike", "score": 830, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Dan", "score": 883, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Big Mike", "score": 815, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Scott", "score": 862, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Big Mike", "score": 877, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Scott", "score": 810, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Dan", "score": 960, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Big Mike", "score": 720, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Scott", "score": 648, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Dan", "score": 820, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Big Mike", "score": 476, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Scott", "score": 951, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Dan", "score": 913, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Big Mike", "score": 692, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Scott", "score": 912, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Dan", "score": 901, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Big Mike", "score": 949, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Big Mike", "score": 878, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Dan", "score": 983, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Big Mike", "score": 964, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Big Mike", "score": 544, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Scott", "score": 823, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Dan", "score": 856, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Big Mike", "score": 839, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Dan", "score": 857, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Big Mike", "score": 926, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Scott", "score": 926, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Dan", "score": 861, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Big Mike", "score": 867, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Scott", "score": 972, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Big Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Big Mike", "score": 892, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Big Mike", "score": 953, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Scott", "score": 971, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Dan", "score": 978, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Big Mike", "score": 923, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Big Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Scott", "score": 901, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Big Mike", "score": 935, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Dan", "score": 968, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Big Mike", "score": 945, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Scott", "score": 965, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Big Mike", "score": 928, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Scott", "score": 924, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Big Mike", "score": 902, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Big Mike", "score": 941, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Scott", "score": 892, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Big Mike", "score": 972, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Scott", "score": 973, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Big Mike", "score": 879, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Dan", "score": 939, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Big Mike", "score": 896, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Scott", "score": 962, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Dan", "score": 943, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Big Mike", "score": 784, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Scott", "score": 956, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Dan", "score": 961, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Big Mike", "score": 831, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Big Mike", "score": 933, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Scott", "score": 957, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Dan", "score": 917, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Big Mike", "score": 847, "flagged": false, "note": null}, {"date": "May 31", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "May 31", "person": "Dan", "score": 942, "flagged": false, "note": null}, {"date": "May 31", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "May 30", "person": "Scott", "score": 934, "flagged": false, "note": null}, {"date": "May 30", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "May 30", "person": "Big Mike", "score": 791, "flagged": false, "note": null}, {"date": "May 29", "person": "Scott", "score": 852, "flagged": false, "note": null}, {"date": "May 29", "person": "Dan", "score": 722, "flagged": false, "note": null}, {"date": "May 29", "person": "Big Mike", "score": 706, "flagged": false, "note": null}, {"date": "May 28", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "May 28", "person": "Dan", "score": 981, "flagged": false, "note": null}, {"date": "May 28", "person": "Big Mike", "score": 952, "flagged": false, "note": null}, {"date": "May 27", "person": "Scott", "score": 707, "flagged": false, "note": null}, {"date": "May 27", "person": "Dan", "score": 826, "flagged": false, "note": null}, {"date": "May 27", "person": "Big Mike", "score": 585, "flagged": false, "note": null}, {"date": "May 26", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 26", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "May 26", "person": "Big Mike", "score": 903, "flagged": false, "note": null}, {"date": "May 25", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "May 25", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 25", "person": "Big Mike", "score": 949, "flagged": false, "note": null}, {"date": "May 24", "person": "Scott", "score": 843, "flagged": false, "note": null}, {"date": "May 24", "person": "Dan", "score": 860, "flagged": false, "note": null}, {"date": "May 24", "person": "Big Mike", "score": 749, "flagged": false, "note": null}, {"date": "May 23", "person": "Scott", "score": 949, "flagged": false, "note": null}, {"date": "May 23", "person": "Dan", "score": 808, "flagged": false, "note": null}, {"date": "May 23", "person": "Big Mike", "score": 843, "flagged": false, "note": null}, {"date": "May 22", "person": "Scott", "score": 747, "flagged": false, "note": null}, {"date": "May 22", "person": "Dan", "score": 651, "flagged": false, "note": null}, {"date": "May 22", "person": "Big Mike", "score": 657, "flagged": false, "note": null}, {"date": "May 21", "person": "Scott", "score": 903, "flagged": false, "note": null}, {"date": "May 21", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 21", "person": "Big Mike", "score": 904, "flagged": false, "note": null}, {"date": "May 20", "person": "Scott", "score": 927, "flagged": false, "note": null}, {"date": "May 20", "person": "Dan", "score": 920, "flagged": false, "note": null}, {"date": "May 20", "person": "Big Mike", "score": 891, "flagged": false, "note": null}, {"date": "May 19", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 19", "person": "Dan", "score": 909, "flagged": false, "note": null}, {"date": "May 19", "person": "Big Mike", "score": 833, "flagged": false, "note": null}, {"date": "May 18", "person": "Scott", "score": 955, "flagged": false, "note": null}, {"date": "May 18", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "May 18", "person": "Big Mike", "score": 951, "flagged": false, "note": null}, {"date": "May 17", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "May 17", "person": "Dan", "score": 957, "flagged": false, "note": null}, {"date": "May 17", "person": "Big Mike", "score": 908, "flagged": false, "note": null}, {"date": "May 16", "person": "Scott", "score": 840, "flagged": false, "note": null}, {"date": "May 16", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "May 16", "person": "Big Mike", "score": 633, "flagged": false, "note": null}, {"date": "May 15", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "May 15", "person": "Dan", "score": 959, "flagged": false, "note": null}, {"date": "May 15", "person": "Big Mike", "score": 880, "flagged": false, "note": null}, {"date": "May 14", "person": "Scott", "score": 928, "flagged": false, "note": null}, {"date": "May 14", "person": "Dan", "score": 906, "flagged": false, "note": null}, {"date": "May 14", "person": "Big Mike", "score": 931, "flagged": false, "note": null}, {"date": "May 13", "person": "Scott", "score": 968, "flagged": false, "note": null}, {"date": "May 13", "person": "Dan", "score": 987, "flagged": false, "note": null}, {"date": "May 13", "person": "Big Mike", "score": 895, "flagged": false, "note": null}, {"date": "May 12", "person": "Scott", "score": 944, "flagged": false, "note": null}, {"date": "May 12", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "May 12", "person": "Big Mike", "score": 816, "flagged": false, "note": null}, {"date": "May 11", "person": "Scott", "score": 808, "flagged": false, "note": null}, {"date": "May 11", "person": "Dan", "score": 689, "flagged": false, "note": null}, {"date": "May 11", "person": "Big Mike", "score": 671, "flagged": false, "note": null}, {"date": "May 10", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "May 10", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "May 10", "person": "Big Mike", "score": 778, "flagged": false, "note": null}, {"date": "May 9", "person": "Scott", "score": 920, "flagged": false, "note": null}, {"date": "May 9", "person": "Dan", "score": 957, "flagged": false, "note": null}, {"date": "May 9", "person": "Big Mike", "score": 918, "flagged": false, "note": null}, {"date": "May 8", "person": "Big Mike", "score": 803, "flagged": false, "note": null}, {"date": "May 7", "person": "Big Mike", "score": 550, "flagged": false, "note": null}, {"date": "May 6", "person": "Big Mike", "score": 766, "flagged": false, "note": null}, {"date": "May 5", "person": "Big Mike", "score": 841, "flagged": false, "note": null}, {"date": "May 4", "person": "Big Mike", "score": 709, "flagged": false, "note": null}, {"date": "May 3", "person": "Big Mike", "score": 651, "flagged": false, "note": null}, {"date": "May 2", "person": "Big Mike", "score": 723, "flagged": false, "note": null}, {"date": "May 1", "person": "Big Mike", "score": 748, "flagged": false, "note": null}, {"date": "Apr 30", "person": "Big Mike", "score": 912, "flagged": false, "note": null}, {"date": "Apr 29", "person": "Big Mike", "score": 851, "flagged": false, "note": null}, {"date": "Apr 28", "person": "Big Mike", "score": 552, "flagged": false, "note": null}], "boxplot": [{"x": "Dan", "y": [651, 905.5, 938.0, 957.0, 987]}, {"x": "Scott", "y": [648, 907.0, 931.5, 959.0, 988]}, {"x": "Big Mike", "y": [476, 778, 878.5, 922, 972]}], "recent_winners": [{"label": "Tuesday", "date": "Aug 4", "winners": [{"name": "Scott", "color": "#0ea5e9"}], "score": 985, "provisional": false}, {"label": "Wednesday", "date": "Aug 5", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 869, "provisional": false}, {"label": "Thursday", "date": "Aug 6", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 973, "provisional": false}, {"label": "Yesterday", "date": "Aug 7", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 953, "provisional": false}, {"label": "Today", "date": "Aug 8", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 956, "provisional": true}], "tomorrow_guess": {"date": "Aug 9", "name": "Dan", "color": "#f59e0b", "reason": "rode a win today"}, "weekly_scores": [{"name": "Dan", "total": 5570, "today": 956, "color": "#f59e0b"}, {"name": "Scott", "total": 5480, "today": 939, "color": "#0ea5e9"}, {"name": "Big Mike", "total": 5090, "today": null, "color": "#10b981"}], "weekly_scores_range": "Aug 2 - Aug 8", "last_week_top3": [{"name": "Dan", "score": 6534, "color": "#f59e0b"}, {"name": "Scott", "score": 6526, "color": "#0ea5e9"}, {"name": "Big Mike", "score": 5941, "color": "#10b981"}], "monthly_scores": [{"name": "Dan", "total": 6475, "today": 956, "color": "#f59e0b"}, {"name": "Scott", "total": 6412, "today": 939, "color": "#0ea5e9"}, {"name": "Big Mike", "total": 5999, "today": null, "color": "#10b981"}], "monthly_scores_range": "August 2026", "last_month_top3": [{"name": "Dan", "score": 28768, "color": "#f59e0b"}, {"name": "Scott", "score": 28357, "color": "#0ea5e9"}, {"name": "Big Mike", "score": 26015, "color": "#10b981"}], "alltime_scores": [{"name": "Big Mike", "total": 84927, "today": null, "color": "#10b981"}, {"name": "Dan", "total": 83739, "today": 956, "color": "#f59e0b"}, {"name": "Scott", "total": 83249, "today": 939, "color": "#0ea5e9"}], "alltime_scores_range": "All Time", "predictions": "Dan is entering the week on a blistering 16-game tear, looking like a mortal lock to push past their 987 personal best and challenge Scott's all-time 988 record. Keep a weather eye on Big Mike this Wednesday, as that is statistically their best day to finally stop the bleeding and avoid another 116.2-point swing disaster. With Dan and Scott both holding a lopsided 76-14 head-to-head dominance over Big Mike, the leaderboard hierarchy looks set in stone for the coming days.", "predictions_pack": {"as_of_latest_game": "Aug 8", "active_window_days": 5, "active_players": [{"name": "Dan", "days_since_last_game": 0, "season_average": 920.6, "season_high": 987, "season_low": 651, "season_trend_points_per_game": 0.34, "consistency_std_dev": 59.2, "last5_scores": [972, 869, 973, 953, 956], "recent_form_last5_vs_season": 24.0, "longest_hot_streak": 16, "best_weekday": {"day": "Wednesday", "avg": 935.8}, "dominates_head_to_head": {"opponent": "Big Mike", "record": "76-14"}}, {"name": "Scott", "days_since_last_game": 0, "season_average": 915.1, "season_high": 988, "season_low": 648, "season_trend_points_per_game": 0.08, "consistency_std_dev": 66.0, "last5_scores": [985, 767, 960, 951, 939], "recent_form_last5_vs_season": 5.3, "longest_hot_streak": 10, "best_weekday": {"day": "Thursday", "avg": 944.3}, "dominates_head_to_head": {"opponent": "Big Mike", "record": "76-14"}}, {"name": "Big Mike", "days_since_last_game": 1, "season_average": 832.6, "season_high": 972, "season_low": 476, "season_trend_points_per_game": 0.6, "consistency_std_dev": 116.2, "last5_scores": [932, 971, 793, 887, 642], "recent_form_last5_vs_season": 12.4, "longest_hot_streak": 16, "best_weekday": {"day": "Wednesday", "avg": 856.3}}], "inactive_players": [], "inactive_players_rule": "Players in inactive_players have NOT played recently. You may mention at most ONE of them, and ONLY to note how long they've been gone and build anticipation for their return - never claim recent form, a hot streak, momentum, or any current-performance angle for them.", "all_time_record": {"score": 988, "holder": "Scott", "date": "Jul 15"}, "suggested_storylines": ["circle Wednesday: Big Mike averages 856.3 on it, comfortably their strongest day of the week.", "Big Mike is the resident wild card - 116.2-point swings make it a coin flip between a masterpiece and a meltdown.", "Dan is a metronome (59.2-point spread); bank on another showing right around 920.", "Dan is riding a 16-game heater at or above their own average, with no sign of letting up.", "Big Mike's season arrow points up (+0.60 points a game) and the climb isn't done.", "Dan is surging into the week white-hot, up +24.0 on their season average across the last 5 - a new personal best feels inevitable.", "Scott owns Big Mike head-to-head (76-14) and that beatdown shows no sign of flipping.", "the all-time 988 (set by Scott on Jul 15) is On Notice - Dan has already touched 987 and is, frankly, due."]}, "cheating_incidents": [], "cherry_pick_incidents": [], "generated_at": "August 08, 2026 at 05:00 PM"};
+        const reportData = {"categories": ["Apr 28", "Apr 29", "Apr 30", "May 1", "May 2", "May 3", "May 4", "May 5", "May 6", "May 7", "May 8", "May 9", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15", "May 16", "May 17", "May 18", "May 19", "May 20", "May 21", "May 22", "May 23", "May 24", "May 25", "May 26", "May 27", "May 28", "May 29", "May 30", "May 31", "Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7", "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14", "Jun 15", "Jun 16", "Jun 17", "Jun 18", "Jun 19", "Jun 20", "Jun 21", "Jun 22", "Jun 23", "Jun 24", "Jun 25", "Jun 26", "Jun 27", "Jun 28", "Jun 29", "Jun 30", "Jul 1", "Jul 2", "Jul 3", "Jul 4", "Jul 5", "Jul 6", "Jul 7", "Jul 8", "Jul 9", "Jul 10", "Jul 11", "Jul 12", "Jul 13", "Jul 14", "Jul 15", "Jul 16", "Jul 17", "Jul 18", "Jul 19", "Jul 20", "Jul 21", "Jul 22", "Jul 23", "Jul 24", "Jul 25", "Jul 26", "Jul 27", "Jul 28", "Jul 29", "Jul 30", "Jul 31", "Aug 1", "Aug 2", "Aug 3", "Aug 4", "Aug 5", "Aug 6", "Aug 7", "Aug 8", "Aug 9"], "series": [{"name": "Dan", "data": [null, null, null, null, null, null, null, null, null, null, null, 957, 919, 689, 938, 987, 906, 959, 930, 957, 944, 909, 920, 948, 651, 808, 860, 948, 958, 826, 981, 722, 941, 942, 917, 973, 961, 943, 939, 966, 930, 941, 954, 938, 968, 944, 925, 978, 966, 938, 936, 861, 857, 856, 954, 983, 930, 901, 913, 820, 960, 925, 883, 936, 958, 887, 949, 954, 953, 919, 869, 969, 855, 963, 855, 928, 833, 931, 973, 952, 927, 894, 943, 879, 955, 973, 929, 961, 930, 936, 981, 864, 955, 984, 909, 905, 915, 888, 972, 869, 973, 953, 956, 979], "color": "#f59e0b"}, {"name": "Scott", "data": [null, null, null, null, null, null, null, null, null, null, null, 920, 845, 808, 944, 968, 928, 953, 840, 961, 955, 913, 927, 903, 747, 949, 843, 948, 913, 707, 979, 852, 934, 963, 957, 974, 956, 962, 930, 973, 892, 959, 924, 965, 974, 901, 963, 971, 979, 917, 972, 926, 954, 823, 948, 953, 959, 912, 951, 648, 810, 862, 954, 911, 940, 930, 838, 940, 961, 855, 845, 975, 917, 928, 918, 776, 813, 916, 988, 946, 915, 919, 959, 730, 974, 976, 923, 964, 917, 931, 957, 933, 918, 977, 878, 932, 921, 896, 985, 767, 960, 951, 939, null], "color": "#0ea5e9"}, {"name": "Big Mike", "data": [552, 851, 912, 748, 723, 651, 709, 841, 766, 550, 803, 918, 778, 671, 816, 895, 931, 880, 633, 908, 951, 833, 891, 904, 657, 843, 749, 949, 903, 585, 952, 706, 791, 881, 847, 933, 831, 784, 896, 879, 972, 941, 902, 928, 945, 935, 922, 923, 953, 892, 922, 867, 926, 839, 544, 964, 878, 949, 692, 476, 720, 877, 815, 830, 704, 894, 853, 882, 947, 754, 640, 947, 693, 903, 881, 899, 748, 888, 919, 786, 915, 786, 938, 604, 822, 936, 844, 956, 844, 522, 921, 881, 927, 957, 824, 909, 865, 932, 971, 793, 887, 642, 700, 935], "color": "#10b981"}], "person_stats": [{"name": "Dan", "color": "#f59e0b", "verified": true, "games": 93, "avg": 921.2, "median": 938, "high": 987, "low": 651, "low_date": "May 22", "wins": 48, "seconds": 33, "losses": 14, "weekly_wins": 9, "monthly_wins": 2, "flags": 0, "ghost_days": 0, "hundreds": 109, "std": 59.2, "days_since_last_game": 0, "days_since_last_win": 1, "days_since_last_game_real": 0, "stale": false, "recent_game_count": 6, "pos_avgs": [98.2, 96.9, 94.5, 91.4, 87.6], "last5_avg": 946.0, "form_delta": 24.8, "dow_sun": 937.1, "dow_mon": 905.5, "dow_tue": 932.8, "dow_wed": 935.8, "dow_thu": 930.8, "dow_fri": 888.8, "dow_sat": 916.9, "pos1_avg": 98.2, "pos2_avg": 96.9, "pos3_avg": 189.0, "pos4_avg": 274.2, "pos5_avg": 262.8, "mode1": 100, "mode1_count": 109, "nickname": "The Sunday Sniper", "blurb": "Dan is absolutely dissecting the field with a league-best 921.2 average, fueled by 109 perfect bullseyes that leave the competition in the dust. The only thing keeping them from total domination is the lingering sting of that May 25th heartbreak loss, where a single point cost them the crown."}, {"name": "Scott", "color": "#0ea5e9", "verified": true, "games": 92, "avg": 915.1, "median": 931.5, "high": 988, "low": 648, "low_date": "Jun 26", "wins": 40, "seconds": 42, "losses": 12, "weekly_wins": 4, "monthly_wins": 0, "flags": 0, "ghost_days": 0, "hundreds": 87, "std": 66.0, "days_since_last_game": 1, "days_since_last_win": 5, "days_since_last_game_real": 1, "stale": false, "recent_game_count": 5, "pos_avgs": [98.4, 97.0, 94.9, 91.5, 85.1], "last5_avg": 920.4, "form_delta": 5.3, "dow_sun": 910.2, "dow_mon": 904.9, "dow_tue": 931.4, "dow_wed": 920.8, "dow_thu": 944.3, "dow_fri": 881.5, "dow_sat": 912.6, "pos1_avg": 98.4, "pos2_avg": 97.0, "pos3_avg": 189.8, "pos4_avg": 274.5, "pos5_avg": 255.3, "mode1": 100, "mode1_count": 87, "nickname": "The Ceiling Cracker", "blurb": "With a massive 988 peak to their name, Scott remains the only player capable of touching the stratosphere of MapTap glory. Despite that, Friday remains an absolute disaster zone where their scoring cratered to a dismal 881.5 average."}, {"name": "Big Mike", "color": "#10b981", "verified": true, "games": 104, "avg": 832.3, "median": 878.5, "high": 972, "low": 476, "low_date": "Jun 26", "wins": 5, "seconds": 21, "losses": 70, "weekly_wins": 1, "monthly_wins": 1, "flags": 0, "ghost_days": 0, "hundreds": 39, "std": 116.3, "days_since_last_game": 0, "days_since_last_win": 6, "days_since_last_game_real": 0, "stale": false, "recent_game_count": 6, "pos_avgs": [94.5, 94.7, 87.7, 83.3, 72.6], "last5_avg": 791.4, "form_delta": -40.9, "dow_sun": 825.9, "dow_mon": 839.9, "dow_tue": 838.8, "dow_wed": 856.3, "dow_thu": 839.9, "dow_fri": 808.0, "dow_sat": 818.0, "pos1_avg": 94.5, "pos2_avg": 94.7, "pos3_avg": 175.4, "pos4_avg": 249.9, "pos5_avg": 217.8, "mode1": 95, "mode1_count": 62, "nickname": "The Volatile Voyager", "blurb": "Big Mike is a walking enigma whose 116.3-point consistency spread makes every round feel like a high-stakes gamble with destiny. That roller-coaster ride hit a absolute brick wall when a brutal -334 point collapse sent them spiraling into the depths of a Jul 20th nightmare."}], "group_stats": {"total_days": 104, "total_games": 289, "group_avg": 887.3, "date_range": "Apr 28 - Aug 9"}, "head_to_head": {"Dan": {"Big Mike": [78, 14, 1], "Scott": [48, 43, 1]}, "Scott": {"Dan": [43, 48, 1], "Big Mike": [77, 14, 1]}, "Big Mike": {"Dan": [14, 78, 1], "Scott": [14, 77, 1]}}, "raw_log": [{"date": "Aug 9", "person": "Dan", "score": 979, "flagged": false, "note": null}, {"date": "Aug 9", "person": "Big Mike", "score": 935, "flagged": false, "note": null}, {"date": "Aug 8", "person": "Scott", "score": 939, "flagged": false, "note": null}, {"date": "Aug 8", "person": "Dan", "score": 956, "flagged": false, "note": null}, {"date": "Aug 8", "person": "Big Mike", "score": 700, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Scott", "score": 951, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Dan", "score": 953, "flagged": false, "note": null}, {"date": "Aug 7", "person": "Big Mike", "score": 642, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Scott", "score": 960, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Aug 6", "person": "Big Mike", "score": 887, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Scott", "score": 767, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Dan", "score": 869, "flagged": false, "note": null}, {"date": "Aug 5", "person": "Big Mike", "score": 793, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Scott", "score": 985, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Dan", "score": 972, "flagged": false, "note": null}, {"date": "Aug 4", "person": "Big Mike", "score": 971, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Scott", "score": 896, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Dan", "score": 888, "flagged": false, "note": null}, {"date": "Aug 3", "person": "Big Mike", "score": 932, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Scott", "score": 921, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Dan", "score": 915, "flagged": false, "note": null}, {"date": "Aug 2", "person": "Big Mike", "score": 865, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Scott", "score": 932, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Dan", "score": 905, "flagged": false, "note": null}, {"date": "Aug 1", "person": "Big Mike", "score": 909, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Scott", "score": 878, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Dan", "score": 909, "flagged": false, "note": null}, {"date": "Jul 31", "person": "Big Mike", "score": 824, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Scott", "score": 977, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Dan", "score": 984, "flagged": false, "note": null}, {"date": "Jul 30", "person": "Big Mike", "score": 957, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Scott", "score": 918, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Dan", "score": 955, "flagged": false, "note": null}, {"date": "Jul 29", "person": "Big Mike", "score": 927, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Scott", "score": 933, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Dan", "score": 864, "flagged": false, "note": null}, {"date": "Jul 28", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Scott", "score": 957, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Dan", "score": 981, "flagged": false, "note": null}, {"date": "Jul 27", "person": "Big Mike", "score": 921, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Scott", "score": 931, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jul 26", "person": "Big Mike", "score": 522, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jul 25", "person": "Big Mike", "score": 844, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Scott", "score": 964, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Dan", "score": 961, "flagged": false, "note": null}, {"date": "Jul 24", "person": "Big Mike", "score": 956, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Scott", "score": 923, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Dan", "score": 929, "flagged": false, "note": null}, {"date": "Jul 23", "person": "Big Mike", "score": 844, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Scott", "score": 976, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jul 22", "person": "Big Mike", "score": 936, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Dan", "score": 955, "flagged": false, "note": null}, {"date": "Jul 21", "person": "Big Mike", "score": 822, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Scott", "score": 730, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Dan", "score": 879, "flagged": false, "note": null}, {"date": "Jul 20", "person": "Big Mike", "score": 604, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Dan", "score": 943, "flagged": false, "note": null}, {"date": "Jul 19", "person": "Big Mike", "score": 938, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Scott", "score": 919, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Dan", "score": 894, "flagged": false, "note": null}, {"date": "Jul 18", "person": "Big Mike", "score": 786, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Scott", "score": 915, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Dan", "score": 927, "flagged": false, "note": null}, {"date": "Jul 17", "person": "Big Mike", "score": 915, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Scott", "score": 946, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Dan", "score": 952, "flagged": false, "note": null}, {"date": "Jul 16", "person": "Big Mike", "score": 786, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Scott", "score": 988, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jul 15", "person": "Big Mike", "score": 919, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Scott", "score": 916, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Dan", "score": 931, "flagged": false, "note": null}, {"date": "Jul 14", "person": "Big Mike", "score": 888, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Scott", "score": 813, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Dan", "score": 833, "flagged": false, "note": null}, {"date": "Jul 13", "person": "Big Mike", "score": 748, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Scott", "score": 776, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Dan", "score": 928, "flagged": false, "note": null}, {"date": "Jul 12", "person": "Big Mike", "score": 899, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Scott", "score": 918, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Dan", "score": 855, "flagged": false, "note": null}, {"date": "Jul 11", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Scott", "score": 928, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Dan", "score": 963, "flagged": false, "note": null}, {"date": "Jul 10", "person": "Big Mike", "score": 903, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Dan", "score": 855, "flagged": false, "note": null}, {"date": "Jul 9", "person": "Big Mike", "score": 693, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Scott", "score": 975, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Dan", "score": 969, "flagged": false, "note": null}, {"date": "Jul 8", "person": "Big Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Dan", "score": 869, "flagged": false, "note": null}, {"date": "Jul 7", "person": "Big Mike", "score": 640, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Scott", "score": 855, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "Jul 6", "person": "Big Mike", "score": 754, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Dan", "score": 953, "flagged": false, "note": null}, {"date": "Jul 5", "person": "Big Mike", "score": 947, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jul 4", "person": "Big Mike", "score": 882, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Scott", "score": 838, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Dan", "score": 949, "flagged": false, "note": null}, {"date": "Jul 3", "person": "Big Mike", "score": 853, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Dan", "score": 887, "flagged": false, "note": null}, {"date": "Jul 2", "person": "Big Mike", "score": 894, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Scott", "score": 940, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "Jul 1", "person": "Big Mike", "score": 704, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Scott", "score": 911, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 30", "person": "Big Mike", "score": 830, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Dan", "score": 883, "flagged": false, "note": null}, {"date": "Jun 29", "person": "Big Mike", "score": 815, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Scott", "score": 862, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 28", "person": "Big Mike", "score": 877, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Scott", "score": 810, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Dan", "score": 960, "flagged": false, "note": null}, {"date": "Jun 27", "person": "Big Mike", "score": 720, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Scott", "score": 648, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Dan", "score": 820, "flagged": false, "note": null}, {"date": "Jun 26", "person": "Big Mike", "score": 476, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Scott", "score": 951, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Dan", "score": 913, "flagged": false, "note": null}, {"date": "Jun 25", "person": "Big Mike", "score": 692, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Scott", "score": 912, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Dan", "score": 901, "flagged": false, "note": null}, {"date": "Jun 24", "person": "Big Mike", "score": 949, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 23", "person": "Big Mike", "score": 878, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Dan", "score": 983, "flagged": false, "note": null}, {"date": "Jun 22", "person": "Big Mike", "score": 964, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 21", "person": "Big Mike", "score": 544, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Scott", "score": 823, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Dan", "score": 856, "flagged": false, "note": null}, {"date": "Jun 20", "person": "Big Mike", "score": 839, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Scott", "score": 954, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Dan", "score": 857, "flagged": false, "note": null}, {"date": "Jun 19", "person": "Big Mike", "score": 926, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Scott", "score": 926, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Dan", "score": 861, "flagged": false, "note": null}, {"date": "Jun 18", "person": "Big Mike", "score": 867, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Scott", "score": 972, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Dan", "score": 936, "flagged": false, "note": null}, {"date": "Jun 17", "person": "Big Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Scott", "score": 917, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 16", "person": "Big Mike", "score": 892, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 15", "person": "Big Mike", "score": 953, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Scott", "score": 971, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Dan", "score": 978, "flagged": false, "note": null}, {"date": "Jun 14", "person": "Big Mike", "score": 923, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Dan", "score": 925, "flagged": false, "note": null}, {"date": "Jun 13", "person": "Big Mike", "score": 922, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Scott", "score": 901, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "Jun 12", "person": "Big Mike", "score": 935, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Dan", "score": 968, "flagged": false, "note": null}, {"date": "Jun 11", "person": "Big Mike", "score": 945, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Scott", "score": 965, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "Jun 10", "person": "Big Mike", "score": 928, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Scott", "score": 924, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Dan", "score": 954, "flagged": false, "note": null}, {"date": "Jun 9", "person": "Big Mike", "score": 902, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Scott", "score": 959, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "Jun 8", "person": "Big Mike", "score": 941, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Scott", "score": 892, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "Jun 7", "person": "Big Mike", "score": 972, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Scott", "score": 973, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Dan", "score": 966, "flagged": false, "note": null}, {"date": "Jun 6", "person": "Big Mike", "score": 879, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Scott", "score": 930, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Dan", "score": 939, "flagged": false, "note": null}, {"date": "Jun 5", "person": "Big Mike", "score": 896, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Scott", "score": 962, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Dan", "score": 943, "flagged": false, "note": null}, {"date": "Jun 4", "person": "Big Mike", "score": 784, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Scott", "score": 956, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Dan", "score": 961, "flagged": false, "note": null}, {"date": "Jun 3", "person": "Big Mike", "score": 831, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Scott", "score": 974, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Dan", "score": 973, "flagged": false, "note": null}, {"date": "Jun 2", "person": "Big Mike", "score": 933, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Scott", "score": 957, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Dan", "score": 917, "flagged": false, "note": null}, {"date": "Jun 1", "person": "Big Mike", "score": 847, "flagged": false, "note": null}, {"date": "May 31", "person": "Scott", "score": 963, "flagged": false, "note": null}, {"date": "May 31", "person": "Dan", "score": 942, "flagged": false, "note": null}, {"date": "May 31", "person": "Big Mike", "score": 881, "flagged": false, "note": null}, {"date": "May 30", "person": "Scott", "score": 934, "flagged": false, "note": null}, {"date": "May 30", "person": "Dan", "score": 941, "flagged": false, "note": null}, {"date": "May 30", "person": "Big Mike", "score": 791, "flagged": false, "note": null}, {"date": "May 29", "person": "Scott", "score": 852, "flagged": false, "note": null}, {"date": "May 29", "person": "Dan", "score": 722, "flagged": false, "note": null}, {"date": "May 29", "person": "Big Mike", "score": 706, "flagged": false, "note": null}, {"date": "May 28", "person": "Scott", "score": 979, "flagged": false, "note": null}, {"date": "May 28", "person": "Dan", "score": 981, "flagged": false, "note": null}, {"date": "May 28", "person": "Big Mike", "score": 952, "flagged": false, "note": null}, {"date": "May 27", "person": "Scott", "score": 707, "flagged": false, "note": null}, {"date": "May 27", "person": "Dan", "score": 826, "flagged": false, "note": null}, {"date": "May 27", "person": "Big Mike", "score": 585, "flagged": false, "note": null}, {"date": "May 26", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 26", "person": "Dan", "score": 958, "flagged": false, "note": null}, {"date": "May 26", "person": "Big Mike", "score": 903, "flagged": false, "note": null}, {"date": "May 25", "person": "Scott", "score": 948, "flagged": false, "note": null}, {"date": "May 25", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 25", "person": "Big Mike", "score": 949, "flagged": false, "note": null}, {"date": "May 24", "person": "Scott", "score": 843, "flagged": false, "note": null}, {"date": "May 24", "person": "Dan", "score": 860, "flagged": false, "note": null}, {"date": "May 24", "person": "Big Mike", "score": 749, "flagged": false, "note": null}, {"date": "May 23", "person": "Scott", "score": 949, "flagged": false, "note": null}, {"date": "May 23", "person": "Dan", "score": 808, "flagged": false, "note": null}, {"date": "May 23", "person": "Big Mike", "score": 843, "flagged": false, "note": null}, {"date": "May 22", "person": "Scott", "score": 747, "flagged": false, "note": null}, {"date": "May 22", "person": "Dan", "score": 651, "flagged": false, "note": null}, {"date": "May 22", "person": "Big Mike", "score": 657, "flagged": false, "note": null}, {"date": "May 21", "person": "Scott", "score": 903, "flagged": false, "note": null}, {"date": "May 21", "person": "Dan", "score": 948, "flagged": false, "note": null}, {"date": "May 21", "person": "Big Mike", "score": 904, "flagged": false, "note": null}, {"date": "May 20", "person": "Scott", "score": 927, "flagged": false, "note": null}, {"date": "May 20", "person": "Dan", "score": 920, "flagged": false, "note": null}, {"date": "May 20", "person": "Big Mike", "score": 891, "flagged": false, "note": null}, {"date": "May 19", "person": "Scott", "score": 913, "flagged": false, "note": null}, {"date": "May 19", "person": "Dan", "score": 909, "flagged": false, "note": null}, {"date": "May 19", "person": "Big Mike", "score": 833, "flagged": false, "note": null}, {"date": "May 18", "person": "Scott", "score": 955, "flagged": false, "note": null}, {"date": "May 18", "person": "Dan", "score": 944, "flagged": false, "note": null}, {"date": "May 18", "person": "Big Mike", "score": 951, "flagged": false, "note": null}, {"date": "May 17", "person": "Scott", "score": 961, "flagged": false, "note": null}, {"date": "May 17", "person": "Dan", "score": 957, "flagged": false, "note": null}, {"date": "May 17", "person": "Big Mike", "score": 908, "flagged": false, "note": null}, {"date": "May 16", "person": "Scott", "score": 840, "flagged": false, "note": null}, {"date": "May 16", "person": "Dan", "score": 930, "flagged": false, "note": null}, {"date": "May 16", "person": "Big Mike", "score": 633, "flagged": false, "note": null}, {"date": "May 15", "person": "Scott", "score": 953, "flagged": false, "note": null}, {"date": "May 15", "person": "Dan", "score": 959, "flagged": false, "note": null}, {"date": "May 15", "person": "Big Mike", "score": 880, "flagged": false, "note": null}, {"date": "May 14", "person": "Scott", "score": 928, "flagged": false, "note": null}, {"date": "May 14", "person": "Dan", "score": 906, "flagged": false, "note": null}, {"date": "May 14", "person": "Big Mike", "score": 931, "flagged": false, "note": null}, {"date": "May 13", "person": "Scott", "score": 968, "flagged": false, "note": null}, {"date": "May 13", "person": "Dan", "score": 987, "flagged": false, "note": null}, {"date": "May 13", "person": "Big Mike", "score": 895, "flagged": false, "note": null}, {"date": "May 12", "person": "Scott", "score": 944, "flagged": false, "note": null}, {"date": "May 12", "person": "Dan", "score": 938, "flagged": false, "note": null}, {"date": "May 12", "person": "Big Mike", "score": 816, "flagged": false, "note": null}, {"date": "May 11", "person": "Scott", "score": 808, "flagged": false, "note": null}, {"date": "May 11", "person": "Dan", "score": 689, "flagged": false, "note": null}, {"date": "May 11", "person": "Big Mike", "score": 671, "flagged": false, "note": null}, {"date": "May 10", "person": "Scott", "score": 845, "flagged": false, "note": null}, {"date": "May 10", "person": "Dan", "score": 919, "flagged": false, "note": null}, {"date": "May 10", "person": "Big Mike", "score": 778, "flagged": false, "note": null}, {"date": "May 9", "person": "Scott", "score": 920, "flagged": false, "note": null}, {"date": "May 9", "person": "Dan", "score": 957, "flagged": false, "note": null}, {"date": "May 9", "person": "Big Mike", "score": 918, "flagged": false, "note": null}, {"date": "May 8", "person": "Big Mike", "score": 803, "flagged": false, "note": null}, {"date": "May 7", "person": "Big Mike", "score": 550, "flagged": false, "note": null}, {"date": "May 6", "person": "Big Mike", "score": 766, "flagged": false, "note": null}, {"date": "May 5", "person": "Big Mike", "score": 841, "flagged": false, "note": null}, {"date": "May 4", "person": "Big Mike", "score": 709, "flagged": false, "note": null}, {"date": "May 3", "person": "Big Mike", "score": 651, "flagged": false, "note": null}, {"date": "May 2", "person": "Big Mike", "score": 723, "flagged": false, "note": null}, {"date": "May 1", "person": "Big Mike", "score": 748, "flagged": false, "note": null}, {"date": "Apr 30", "person": "Big Mike", "score": 912, "flagged": false, "note": null}, {"date": "Apr 29", "person": "Big Mike", "score": 851, "flagged": false, "note": null}, {"date": "Apr 28", "person": "Big Mike", "score": 552, "flagged": false, "note": null}], "boxplot": [{"x": "Dan", "y": [651, 905.5, 938, 957.5, 987]}, {"x": "Scott", "y": [648, 907.0, 931.5, 959.0, 988]}, {"x": "Big Mike", "y": [476, 772.0, 878.5, 922.0, 972]}], "recent_winners": [{"label": "Wednesday", "date": "Aug 5", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 869, "provisional": false}, {"label": "Thursday", "date": "Aug 6", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 973, "provisional": false}, {"label": "Friday", "date": "Aug 7", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 953, "provisional": false}, {"label": "Yesterday", "date": "Aug 8", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 956, "provisional": false}, {"label": "Today", "date": "Aug 9", "winners": [{"name": "Dan", "color": "#f59e0b"}], "score": 979, "provisional": true}], "tomorrow_guess": {"date": "Aug 10", "name": "Dan", "color": "#f59e0b", "reason": "rode a win today"}, "weekly_scores": [{"name": "Dan", "total": 0, "today": 979, "color": "#f59e0b"}, {"name": "Big Mike", "total": 0, "today": 935, "color": "#10b981"}], "weekly_scores_range": "Aug 9 - Aug 15", "last_week_top3": [{"name": "Dan", "score": 6526, "color": "#f59e0b"}, {"name": "Scott", "score": 6419, "color": "#0ea5e9"}, {"name": "Big Mike", "score": 5790, "color": "#10b981"}], "monthly_scores": [{"name": "Dan", "total": 7431, "today": 979, "color": "#f59e0b"}, {"name": "Scott", "total": 7351, "today": null, "color": "#0ea5e9"}, {"name": "Big Mike", "total": 6699, "today": 935, "color": "#10b981"}], "monthly_scores_range": "August 2026", "last_month_top3": [{"name": "Dan", "score": 28768, "color": "#f59e0b"}, {"name": "Scott", "score": 28357, "color": "#0ea5e9"}, {"name": "Big Mike", "score": 26015, "color": "#10b981"}], "alltime_scores": [{"name": "Big Mike", "total": 85627, "today": 935, "color": "#10b981"}, {"name": "Dan", "total": 84695, "today": 979, "color": "#f59e0b"}, {"name": "Scott", "total": 84188, "today": null, "color": "#0ea5e9"}], "alltime_scores_range": "All Time", "predictions": "Dan is entering the week on a blistering 16-game heater, and with a 78-14 head-to-head record against Big Mike, they are the clear favorite to keep the pressure on. Keep your eyes glued to Thursday as Scott looks to lean on a 944.3 day-average to hunt down that all-time high score of 988. Meanwhile, Big Mike remains the ultimate wildcard, likely to fluctuate wildly between a miracle round and another sub-480 catastrophe as they fight to reverse a slump currently sitting 40.9 points below their season norm.", "predictions_pack": {"as_of_latest_game": "Aug 9", "active_window_days": 5, "active_players": [{"name": "Dan", "days_since_last_game": 0, "season_average": 921.2, "season_high": 987, "season_low": 651, "season_trend_points_per_game": 0.37, "consistency_std_dev": 59.2, "last5_scores": [869, 973, 953, 956, 979], "recent_form_last5_vs_season": 24.8, "longest_hot_streak": 16, "best_weekday": {"day": "Sunday", "avg": 937.1}, "dominates_head_to_head": {"opponent": "Big Mike", "record": "78-14"}}, {"name": "Scott", "days_since_last_game": 1, "season_average": 915.1, "season_high": 988, "season_low": 648, "season_trend_points_per_game": 0.08, "consistency_std_dev": 66.0, "last5_scores": [985, 767, 960, 951, 939], "recent_form_last5_vs_season": 5.3, "longest_hot_streak": 10, "best_weekday": {"day": "Thursday", "avg": 944.3}, "dominates_head_to_head": {"opponent": "Big Mike", "record": "77-14"}}, {"name": "Big Mike", "days_since_last_game": 0, "season_average": 832.3, "season_high": 972, "season_low": 476, "season_trend_points_per_game": 0.55, "consistency_std_dev": 116.3, "last5_scores": [793, 887, 642, 700, 935], "recent_form_last5_vs_season": -40.9, "longest_hot_streak": 16, "best_weekday": {"day": "Wednesday", "avg": 856.3}}], "inactive_players": [], "inactive_players_rule": "Players in inactive_players have NOT played recently. You may mention at most ONE of them, and ONLY to note how long they've been gone and build anticipation for their return - never claim recent form, a hot streak, momentum, or any current-performance angle for them.", "all_time_record": {"score": 988, "holder": "Scott", "date": "Jul 15"}, "suggested_storylines": ["Dan is surging into the week white-hot, up +24.8 on their season average across the last 5 - a new personal best feels inevitable.", "Big Mike's season arrow points up (+0.55 points a game) and the climb isn't done.", "circle Thursday: Scott averages 944.3 on it, comfortably their strongest day of the week.", "it's panic stations for Big Mike, 40.9 below their own average lately - don't be shocked by a sub-480 faceplant before they climb out.", "Dan owns Big Mike head-to-head (78-14) and that beatdown shows no sign of flipping.", "Dan is riding a 16-game heater at or above their own average, with no sign of letting up.", "the all-time 988 (set by Scott on Jul 15) is On Notice - Dan has already touched 987 and is, frankly, due.", "Dan is a metronome (59.2-point spread); bank on another showing right around 920.", "Big Mike is the resident wild card - 116.3-point swings make it a coin flip between a masterpiece and a meltdown."]}, "cheating_incidents": [], "cherry_pick_incidents": [], "generated_at": "August 09, 2026 at 10:00 AM"};
+
+        // Players inactive 30+ real days are hidden by default everywhere a
+        // player shows up by name - chart, stat tables, Scouting Report,
+        // score-period bubbles, Head-to-Head dropdowns - via the
+        // "Show old players" toggle wired up near the bottom of this script.
+        // A name-keyed Set (not a filtered array) so it can filter both full
+        // person_stats objects and the differently-shaped weekly/monthly/
+        // all-time score-bubble objects, which only carry `.name`.
+        const INACTIVE_PLAYER_NAMES = new Set(reportData.person_stats.filter(p => p.stale).map(p => p.name));
+        let showOldPlayers = false;
+        function isVisiblePerson(p) { return showOldPlayers || !INACTIVE_PLAYER_NAMES.has(p.name); }
+        function visiblePersonStats() { return reportData.person_stats.filter(isVisiblePerson); }
 
         document.getElementById('report-generation-time').textContent = reportData.generated_at;
 
@@ -345,18 +410,29 @@
             return ` <span class="text-xs text-slate-500 font-normal">&middot; ${label}: ${parts.join(', ')}</span>`;
         }
 
-        renderScorePeriod('weekly-scores-list', 'weekly-scores-range', reportData.weekly_scores || [], reportData.weekly_scores_range, 'Leading this week', 'No scores yet this week');
+        // Re-callable so the "Show old players" toggle can drop/restore
+        // stale players' bubbles without re-deriving them from scratch -
+        // last_week_top3/last_month_top3 podium badges are left alone since a
+        // genuinely 30+-day-inactive player can't be in a PRIOR fully-elapsed
+        // period's top 3 anyway.
+        function visibleScores(scores) {
+            return (scores || []).filter(w => showOldPlayers || !INACTIVE_PLAYER_NAMES.has(w.name));
+        }
+        function refreshScorePeriods() {
+            renderScorePeriod('weekly-scores-list', 'weekly-scores-range', visibleScores(reportData.weekly_scores), reportData.weekly_scores_range, 'Leading this week', 'No scores yet this week');
+            renderScorePeriod('monthly-scores-list', 'monthly-scores-range', visibleScores(reportData.monthly_scores), reportData.monthly_scores_range, 'Leading this month', 'No scores yet this month');
+            renderScorePeriod('alltime-scores-list', 'alltime-scores-range', visibleScores(reportData.alltime_scores), reportData.alltime_scores_range, 'Leading all time', 'No scores yet');
+        }
+        refreshScorePeriods();
         document.getElementById('weekly-last-winner').innerHTML = periodTopBadge(reportData.last_week_top3, 'Last week');
-
-        renderScorePeriod('monthly-scores-list', 'monthly-scores-range', reportData.monthly_scores || [], reportData.monthly_scores_range, 'Leading this month', 'No scores yet this month');
         document.getElementById('monthly-last-winner').innerHTML = periodTopBadge(reportData.last_month_top3, 'Last month');
-
-        renderScorePeriod('alltime-scores-list', 'alltime-scores-range', reportData.alltime_scores || [], reportData.alltime_scores_range, 'Leading all time', 'No scores yet');
 
         // Crown the best and sad-face the worst in each Player Stats column.
         // Mode columns are scored by the mode VALUE (the score itself), not how
         // many times that score was hit.
-        const statColumns = ['games', 'avg', 'median', 'mode1', 'high', 'low', 'hundreds', 'losses', 'weekly_wins', 'monthly_wins', 'seconds', 'wins', 'days_since_last_win'];
+        const dowColumns = ['dow_sun', 'dow_mon', 'dow_tue', 'dow_wed', 'dow_thu', 'dow_fri', 'dow_sat'];
+        const positionColumns = ['pos1_avg', 'pos2_avg', 'pos3_avg', 'pos4_avg', 'pos5_avg'];
+        const statColumns = ['games', 'avg', 'median', 'mode1', 'high', 'low', 'hundreds', 'losses', 'weekly_wins', 'monthly_wins', 'seconds', 'wins', 'days_since_last_win', ...dowColumns, ...positionColumns];
         // Lower is better for these columns, so the crown/sad-face (and default
         // sort direction) flip relative to every other column here.
         const invertedColumns = new Set(['losses', 'days_since_last_win']);
@@ -366,27 +442,41 @@
         // just passes to the next-highest legitimate player instead. They can
         // still show a sad-face (worst) on them, and every other column's
         // crown/sad-face is unaffected.
-        const ghostExcludedColumns = new Set(['games', 'avg', 'median', 'low', 'losses']);
-        const activePlayers = reportData.person_stats.filter(p => p.games > 0);
-        // Never won a day outright = infinite days since a win. Coercing that
-        // null to Infinity (rather than filtering it out) lets it participate in
-        // min/max like any other value - it's always the group's worst on this
-        // column - while the cell renderer below swaps the number back out for
-        // an actual infinity glyph.
-        activePlayers.forEach(p => {
-            if (p.days_since_last_win === null || p.days_since_last_win === undefined) p.days_since_last_win = Infinity;
-        });
-        const nonCherryPickers = activePlayers.filter(p => !(p.ghost_days > 0));
+        const ghostExcludedColumns = new Set(['games', 'avg', 'median', 'low', 'losses', ...dowColumns, ...positionColumns]);
+        // activePlayers/nonCherryPickers/extremes/crownEligibleExtremes all
+        // depend on which players are currently visible, so they're
+        // recomputed - not just computed once - via computeCrownExtremes(),
+        // called both here and again by the "Show old players" toggle
+        // (through refreshStatTables() below) so crowns/sad-faces always
+        // reflect whichever pool is on screen right now.
+        let activePlayers = [];
+        let nonCherryPickers = [];
         const extremes = {};
         const crownEligibleExtremes = {};
-        statColumns.forEach(key => {
-            const vals = activePlayers.map(p => p[key]).filter(v => v !== null && v !== undefined);
-            if (vals.length) extremes[key] = { max: Math.max(...vals), min: Math.min(...vals) };
 
-            const eligiblePool = ghostExcludedColumns.has(key) ? nonCherryPickers : activePlayers;
-            const eligibleVals = eligiblePool.map(p => p[key]).filter(v => v !== null && v !== undefined);
-            if (eligibleVals.length) crownEligibleExtremes[key] = { max: Math.max(...eligibleVals), min: Math.min(...eligibleVals) };
-        });
+        function computeCrownExtremes() {
+            activePlayers = visiblePersonStats().filter(p => p.games > 0);
+            // Never won a day outright = infinite days since a win. Coercing that
+            // null to Infinity (rather than filtering it out) lets it participate in
+            // min/max like any other value - it's always the group's worst on this
+            // column - while the cell renderer below swaps the number back out for
+            // an actual infinity glyph.
+            activePlayers.forEach(p => {
+                if (p.days_since_last_win === null || p.days_since_last_win === undefined) p.days_since_last_win = Infinity;
+            });
+            nonCherryPickers = activePlayers.filter(p => !(p.ghost_days > 0));
+            Object.keys(extremes).forEach(k => delete extremes[k]);
+            Object.keys(crownEligibleExtremes).forEach(k => delete crownEligibleExtremes[k]);
+            statColumns.forEach(key => {
+                const vals = activePlayers.map(p => p[key]).filter(v => v !== null && v !== undefined);
+                if (vals.length) extremes[key] = { max: Math.max(...vals), min: Math.min(...vals) };
+
+                const eligiblePool = ghostExcludedColumns.has(key) ? nonCherryPickers : activePlayers;
+                const eligibleVals = eligiblePool.map(p => p[key]).filter(v => v !== null && v !== undefined);
+                if (eligibleVals.length) crownEligibleExtremes[key] = { max: Math.max(...eligibleVals), min: Math.min(...eligibleVals) };
+            });
+        }
+        computeCrownExtremes();
 
         function extremeSuffix(value, key, p) {
             const crownPool = ghostExcludedColumns.has(key) ? crownEligibleExtremes : extremes;
@@ -443,7 +533,7 @@
             const playerBody = document.getElementById('player-stats-tbody');
             playerBody.innerHTML = '';
 
-            let rows = reportData.person_stats.slice();
+            let rows = visiblePersonStats();
             if (playerSort.key) {
                 const { key, dir } = playerSort;
                 const active = rows.filter(p => p.games > 0);
@@ -511,19 +601,172 @@
             });
         });
 
-        renderPlayerStatsTable();
+        // Group Average footer row shared by the Day of Week and Guess
+        // Breakdown tables below - mean of the currently active+visible
+        // players' values for one column, skipping anyone with no value
+        // (e.g. a weekday under the 2-game threshold), not just excluding
+        // zero-games/hidden players.
+        function columnAverage(key) {
+            const vals = activePlayers.map(p => p[key]).filter(v => v !== null && v !== undefined);
+            if (!vals.length) return null;
+            return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+        }
+
+        let dowSort = { key: null, dir: 1 };
+
+        function renderDowStatsTable() {
+            const body = document.getElementById('dow-stats-tbody');
+            body.innerHTML = '';
+
+            let rows = visiblePersonStats();
+            if (dowSort.key) {
+                const { key, dir } = dowSort;
+                const active = rows.filter(p => p.games > 0);
+                const inactive = rows.filter(p => p.games === 0);
+                active.sort((a, b) => {
+                    const av = a[key], bv = b[key];
+                    if (av === null || av === undefined || bv === null || bv === undefined) {
+                        return ((av === null || av === undefined) ? 1 : 0) - ((bv === null || bv === undefined) ? 1 : 0);
+                    }
+                    return typeof av === 'string' ? dir * av.localeCompare(bv) : dir * (av - bv);
+                });
+                rows = active.concat(inactive);
+            }
+
+            rows.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = 'group border-b border-slate-800/40 hover:bg-slate-900/20 transition-colors';
+                const cell = (key, val) => (p.games > 0 && val !== null && val !== undefined) ? decorate(val, key, p) : '--';
+                row.innerHTML = `
+                    <td class="sticky left-0 z-10 bg-[#070d1f] group-hover:bg-[#0a1120] transition-colors px-4 py-4 font-semibold" style="color: ${p.color}">
+                        <div>${p.name}${cheatMarker(p)}${ghostMarker(p)}</div>
+                        ${p.verified === false ? `<div class="text-xs">${unverifiedMarkerLabeled(p)}</div>` : ''}
+                    </td>
+                    <td class="px-4 py-4">${cell('dow_sun', p.dow_sun)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_mon', p.dow_mon)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_tue', p.dow_tue)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_wed', p.dow_wed)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_thu', p.dow_thu)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_fri', p.dow_fri)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('dow_sat', p.dow_sat)}${ghostMarker(p)}</td>
+                `;
+                body.appendChild(row);
+            });
+
+            const avgRow = document.createElement('tr');
+            avgRow.className = 'border-t-2 border-slate-700 bg-slate-900/50 font-semibold text-slate-200';
+            const avgCell = key => { const v = columnAverage(key); return v !== null ? v : '--'; };
+            avgRow.innerHTML = `
+                <td class="sticky left-0 z-10 bg-[#0c1428] px-4 py-4">Group Average</td>
+                <td class="px-4 py-4">${avgCell('dow_sun')}</td>
+                <td class="px-4 py-4">${avgCell('dow_mon')}</td>
+                <td class="px-4 py-4">${avgCell('dow_tue')}</td>
+                <td class="px-4 py-4">${avgCell('dow_wed')}</td>
+                <td class="px-4 py-4">${avgCell('dow_thu')}</td>
+                <td class="px-4 py-4">${avgCell('dow_fri')}</td>
+                <td class="px-4 py-4">${avgCell('dow_sat')}</td>
+            `;
+            body.appendChild(avgRow);
+        }
+
+        document.querySelectorAll('#dow-stats-thead th[data-sort-key]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sortKey;
+                if (dowSort.key === key) {
+                    dowSort.dir *= -1;
+                } else {
+                    dowSort.key = key;
+                    dowSort.dir = th.dataset.sortType === 'text' ? 1 : -1;
+                }
+                document.querySelectorAll('#dow-stats-thead .sort-arrow').forEach(s => s.textContent = '');
+                th.querySelector('.sort-arrow').textContent = dowSort.dir === 1 ? '▲' : '▼';
+                renderDowStatsTable();
+            });
+        });
+
+        let positionSort = { key: null, dir: 1 };
+
+        function renderPositionStatsTable() {
+            const body = document.getElementById('position-stats-tbody');
+            body.innerHTML = '';
+
+            let rows = visiblePersonStats();
+            if (positionSort.key) {
+                const { key, dir } = positionSort;
+                const active = rows.filter(p => p.games > 0);
+                const inactive = rows.filter(p => p.games === 0);
+                active.sort((a, b) => {
+                    const av = a[key], bv = b[key];
+                    if (av === null || av === undefined || bv === null || bv === undefined) {
+                        return ((av === null || av === undefined) ? 1 : 0) - ((bv === null || bv === undefined) ? 1 : 0);
+                    }
+                    return typeof av === 'string' ? dir * av.localeCompare(bv) : dir * (av - bv);
+                });
+                rows = active.concat(inactive);
+            }
+
+            rows.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = 'group border-b border-slate-800/40 hover:bg-slate-900/20 transition-colors';
+                const cell = (key, val) => (p.games > 0 && val !== null && val !== undefined) ? decorate(val, key, p) : '--';
+                row.innerHTML = `
+                    <td class="sticky left-0 z-10 bg-[#070d1f] group-hover:bg-[#0a1120] transition-colors px-4 py-4 font-semibold" style="color: ${p.color}">
+                        <div>${p.name}${cheatMarker(p)}${ghostMarker(p)}</div>
+                        ${p.verified === false ? `<div class="text-xs">${unverifiedMarkerLabeled(p)}</div>` : ''}
+                    </td>
+                    <td class="px-4 py-4">${cell('pos1_avg', p.pos1_avg)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('pos2_avg', p.pos2_avg)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('pos3_avg', p.pos3_avg)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('pos4_avg', p.pos4_avg)}${ghostMarker(p)}</td>
+                    <td class="px-4 py-4">${cell('pos5_avg', p.pos5_avg)}${ghostMarker(p)}</td>
+                `;
+                body.appendChild(row);
+            });
+
+            const avgRow = document.createElement('tr');
+            avgRow.className = 'border-t-2 border-slate-700 bg-slate-900/50 font-semibold text-slate-200';
+            const avgCell = key => { const v = columnAverage(key); return v !== null ? v : '--'; };
+            avgRow.innerHTML = `
+                <td class="sticky left-0 z-10 bg-[#0c1428] px-4 py-4">Group Average</td>
+                <td class="px-4 py-4">${avgCell('pos1_avg')}</td>
+                <td class="px-4 py-4">${avgCell('pos2_avg')}</td>
+                <td class="px-4 py-4">${avgCell('pos3_avg')}</td>
+                <td class="px-4 py-4">${avgCell('pos4_avg')}</td>
+                <td class="px-4 py-4">${avgCell('pos5_avg')}</td>
+            `;
+            body.appendChild(avgRow);
+        }
+
+        document.querySelectorAll('#position-stats-thead th[data-sort-key]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sortKey;
+                if (positionSort.key === key) {
+                    positionSort.dir *= -1;
+                } else {
+                    positionSort.key = key;
+                    positionSort.dir = th.dataset.sortType === 'text' ? 1 : -1;
+                }
+                document.querySelectorAll('#position-stats-thead .sort-arrow').forEach(s => s.textContent = '');
+                th.querySelector('.sort-arrow').textContent = positionSort.dir === 1 ? '▲' : '▼';
+                renderPositionStatsTable();
+            });
+        });
+
+        // Re-run after the "Show old players" toggle flips - recomputes
+        // crown/sad-face extremes against the current visible pool, then
+        // re-renders all 3 tables against that same pool.
+        function refreshStatTables() {
+            computeCrownExtremes();
+            renderPlayerStatsTable();
+            renderDowStatsTable();
+            renderPositionStatsTable();
+        }
+        refreshStatTables();
 
         function renderHeadToHead() {
             const selA = document.getElementById('h2h-player-a');
             const selB = document.getElementById('h2h-player-b');
             const resultEl = document.getElementById('h2h-result');
-
-            const names = reportData.person_stats.map(p => p.name).sort((a, b) => a.localeCompare(b));
-            names.forEach(name => {
-                selA.add(new Option(name, name));
-                selB.add(new Option(name, name));
-            });
-            if (names.length > 1) selB.selectedIndex = 1;
 
             function update() {
                 const a = selA.value, b = selB.value;
@@ -549,27 +792,53 @@
                 `;
             }
 
+            // Re-callable so the "Show old players" toggle can repopulate the
+            // dropdowns without losing the current picks - falls back to the
+            // first two names only if one of them just got hidden.
+            function populateH2HOptions() {
+                const prevA = selA.value, prevB = selB.value;
+                selA.innerHTML = '';
+                selB.innerHTML = '';
+                const names = visiblePersonStats().map(p => p.name).sort((a, b) => a.localeCompare(b));
+                names.forEach(name => {
+                    selA.add(new Option(name, name));
+                    selB.add(new Option(name, name));
+                });
+                if (names.includes(prevA) && names.includes(prevB) && prevA !== prevB) {
+                    selA.value = prevA;
+                    selB.value = prevB;
+                } else if (names.length > 1) {
+                    selB.selectedIndex = 1;
+                }
+                update();
+            }
+
+            populateH2HOptions();
             selA.addEventListener('change', update);
             selB.addEventListener('change', update);
-            update();
+            return populateH2HOptions;
         }
 
-        renderHeadToHead();
+        const refreshH2HOptions = renderHeadToHead();
 
-        const scoutingGrid = document.getElementById('scouting-report-grid');
-        reportData.person_stats.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'p-4 bg-slate-950/40 border border-slate-800/60 rounded-lg';
-            // verified is null for reports that don't track MapTap links at all
-            // (BigDogs, the combined report) - only flag an explicit false.
-            const unverified = p.verified === false;
-            card.innerHTML = `
-                <p class="font-semibold mb-1" style="color: ${p.color}">${p.name}${cheatMarker(p)}${ghostMarker(p)} <span class="text-xs font-normal text-slate-500">"${p.nickname || ''}"</span></p>
-                ${unverified ? `<p class="text-xs text-red-400 mb-1">* Unverified - no MapTap Id</p>` : ''}
-                <p class="text-sm text-slate-400 leading-relaxed">${p.blurb || ''}</p>
-            `;
-            scoutingGrid.appendChild(card);
-        });
+        function renderScoutingReport() {
+            const scoutingGrid = document.getElementById('scouting-report-grid');
+            scoutingGrid.innerHTML = '';
+            visiblePersonStats().forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'p-4 bg-slate-950/40 border border-slate-800/60 rounded-lg';
+                // verified is null for reports that don't track MapTap links at all
+                // (BigDogs, the combined report) - only flag an explicit false.
+                const unverified = p.verified === false;
+                card.innerHTML = `
+                    <p class="font-semibold mb-1" style="color: ${p.color}">${p.name}${cheatMarker(p)}${ghostMarker(p)} <span class="text-xs font-normal text-slate-500">"${p.nickname || ''}"</span></p>
+                    ${unverified ? `<p class="text-xs text-red-400 mb-1">* Unverified - no MapTap Id</p>` : ''}
+                    <p class="text-sm text-slate-400 leading-relaxed">${p.blurb || ''}</p>
+                `;
+                scoutingGrid.appendChild(card);
+            });
+        }
+        renderScoutingReport();
 
         document.getElementById('predictions-text').textContent =
             reportData.predictions || "Not enough games on the board yet to make a prediction.";
@@ -630,9 +899,17 @@
         const isMobile = window.matchMedia('(max-width: 640px)').matches;
         const MOBILE_DEFAULT_DAYS = 10;
         const fullCategories = reportData.categories;
-        const fullSeries = reportData.series.map(s => ({ name: s.name, data: s.data }));
         const recentCategories = fullCategories.slice(-MOBILE_DEFAULT_DAYS);
-        const recentSeries = fullSeries.map(s => ({ name: s.name, data: s.data.slice(-MOBILE_DEFAULT_DAYS) }));
+
+        // Recomputed (not a one-time const) so the "Show old players" toggle
+        // can drop/restore lines - see the toggle handler below.
+        function seriesForVisibility() {
+            const src = reportData.series.filter(s => showOldPlayers || !INACTIVE_PLAYER_NAMES.has(s.name));
+            const full = src.map(s => ({ name: s.name, data: s.data }));
+            const recent = full.map(s => ({ name: s.name, data: s.data.slice(-MOBILE_DEFAULT_DAYS) }));
+            return { full, recent, colors: src.map(s => s.color) };
+        }
+        let { full: fullSeries, recent: recentSeries, colors: chartColors } = seriesForVisibility();
         let showingFullHistory = !isMobile;
 
         const options = {
@@ -649,7 +926,7 @@
                 }
             },
             theme: { mode: 'dark' },
-            colors: reportData.series.map(s => s.color),
+            colors: chartColors,
             stroke: { width: 3, curve: 'smooth' },
             markers: { size: 4, strokeColors: '#0f172a', strokeWidth: 2 },
             xaxis: {
@@ -702,8 +979,25 @@
             });
         }
 
+        // Re-run after the "Show old players" toggle flips - recomputes the
+        // series/colors from the current showOldPlayers state and pushes them
+        // into the already-rendered chart, composing with showingFullHistory
+        // (the chart-range-toggle above) rather than fighting it.
+        function refreshChartSeries() {
+            ({ full: fullSeries, recent: recentSeries, colors: chartColors } = seriesForVisibility());
+            chart.updateOptions({
+                series: showingFullHistory ? fullSeries : recentSeries,
+                colors: chartColors
+            });
+        }
+
+        // reportData.boxplot entries use `.x` (not `.name`) for the player name.
+        function boxplotDataForVisibility() {
+            return reportData.boxplot.filter(item => showOldPlayers || !INACTIVE_PLAYER_NAMES.has(item.x));
+        }
+
         const boxplotOptions = {
-            series: [{ type: 'boxPlot', data: reportData.boxplot }],
+            series: [{ type: 'boxPlot', data: boxplotDataForVisibility() }],
             chart: {
                 // Taller than the trend chart above it (420) to leave room for
                 // fully-vertical labels below - unlike the trend chart's x-axis
@@ -747,6 +1041,34 @@
 
         const boxplotChart = new ApexCharts(document.querySelector("#boxplot-element"), boxplotOptions);
         boxplotChart.render();
+
+        function refreshBoxplot() {
+            boxplotChart.updateOptions({ series: [{ type: 'boxPlot', data: boxplotDataForVisibility() }] });
+        }
+
+        // "Show old players" toggle - hides itself if nobody in this group is
+        // currently stale, otherwise flips showOldPlayers and re-runs every
+        // render path above that filters by it.
+        const oldPlayersToggleBtn = document.getElementById('old-players-toggle');
+        if (oldPlayersToggleBtn) {
+            const inactiveCount = INACTIVE_PLAYER_NAMES.size;
+            if (!inactiveCount) {
+                oldPlayersToggleBtn.style.display = 'none';
+            } else {
+                const toggleLabel = () => showOldPlayers ? 'Hide old players' : 'Show old players';
+                oldPlayersToggleBtn.textContent = toggleLabel();
+                oldPlayersToggleBtn.addEventListener('click', () => {
+                    showOldPlayers = !showOldPlayers;
+                    oldPlayersToggleBtn.textContent = toggleLabel();
+                    refreshChartSeries();
+                    refreshBoxplot();
+                    refreshScorePeriods();
+                    refreshStatTables();
+                    renderScoutingReport();
+                    refreshH2HOptions();
+                });
+            }
+        }
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
